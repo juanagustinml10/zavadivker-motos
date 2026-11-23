@@ -1,14 +1,14 @@
-# Migraciones de SF MOTOS
+# Migraciones de ZAVADIVKER MOTOS
 
-## Estado actual: pendientes en la base de SF MOTOS
+## Estado actual: pendientes en la base propia
 
-Las tres migraciones están versionadas en el repo, pero **no fueron aplicadas a ninguna
-base propia de SF MOTOS**. No existe una URL de base de datos configurada para este
-proyecto. Ejecutar `prisma migrate deploy` contra la nueva base antes de usar la API.
+Las cinco migraciones están versionadas en el repo, pero **todavía no fueron aplicadas
+a ninguna base de datos propia**. `backend/.env` es un placeholder; crear un proyecto
+Neon nuevo y ejecutar `prisma migrate deploy` contra esa base antes de usar la API.
 
 La tercera, `20261119000000_add_image_blobs`, es aditiva: agrega `data` (BYTEA),
 `mimeType`, `sizeBytes`, `checksum`, `storageKey` (único) y `legacyUrl` a `BikeImage`.
-No modifica ni borra filas existentes.
+No modifica ni borra filas existentes. La cuarta y la quinta también son aditivas.
 
 Orden de aplicación:
 
@@ -20,6 +20,9 @@ Orden de aplicación:
 2. `20261117000000_add_usage_hours_draft` — agrega `Bike.usageHours`
    (`DOUBLE PRECISION`, nullable) y el valor `BORRADOR` al enum `BikeStatus`.
    Las filas existentes conservan `NULL`: no se inventan valores.
+ 3. `20261119000000_add_image_blobs` — columnas de binarios y `storageKey` en `BikeImage`.
+ 4. `20261121000000_optimize_images` — miniatura y dimensiones para las versiones WebP.
+ 5. `20261121010000_add_bike_usage` — enum `BikeUsage` y columna `Bike.usage` (nullable).
 
 La baseline se generó con `prisma migrate diff --from-empty` desde un esquema
 sin esos dos cambios, y se verificó que `baseline + migración existente` produce

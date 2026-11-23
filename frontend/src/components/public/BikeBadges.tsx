@@ -10,15 +10,19 @@ interface BadgeProps {
   tone?: Tone;
 }
 
+const chip = 'tag !rounded-none !px-2.5 !py-1.5 !text-[9px] !font-extrabold !tracking-[0.2em]';
+
 export const ConditionTag: React.FC<BadgeProps & { condition: BikeCondition }> = ({ condition, overlay = false, tone = 'dark' }) => {
   const nueva = condition === 'NUEVA';
   return (
     <span
       className={cn(
-        'tag',
-        overlay
-          ? nueva ? 'bg-sf-red text-white' : 'bg-white text-black'
-          : nueva ? 'bg-sf-red text-white' : tone === 'light' ? 'bg-sf-black text-white' : 'bg-white text-black'
+        chip,
+        nueva
+          ? '!bg-zv-orange !text-zv-black'
+          : overlay || tone === 'dark'
+            ? '!bg-white !text-zv-black'
+            : '!bg-zv-black !text-white'
       )}
     >
       {conditionLabel(condition)}
@@ -33,17 +37,17 @@ export const StatusTag: React.FC<BadgeProps & { status: BikeStatus }> = ({ statu
       : status === 'RESERVADA'
         ? 'bg-amber-400'
         : status === 'BORRADOR'
-          ? 'bg-gray-400'
-          : 'bg-sf-red';
+          ? 'bg-zv-ink-400'
+          : 'bg-zv-orange';
   return (
     <span
       className={cn(
-        'tag',
+        chip,
         overlay
-          ? 'bg-black/70 text-white backdrop-blur'
+          ? '!border !border-white/15 !bg-zv-black/80 !text-white backdrop-blur-sm'
           : tone === 'light'
-            ? 'border border-black/15 text-black/70'
-            : 'border border-white/15 text-gray-300'
+            ? '!border !border-black/20 !text-black/70'
+            : '!border !border-white/20 !text-zv-ink-300'
       )}
     >
       <span className={cn('h-1.5 w-1.5 shrink-0', dot)} />
@@ -55,14 +59,15 @@ export const StatusTag: React.FC<BadgeProps & { status: BikeStatus }> = ({ statu
 export const FeaturedTag: React.FC<BadgeProps> = ({ overlay = false, tone = 'dark' }) => (
   <span
     className={cn(
-      'tag',
+      chip,
       overlay
-        ? 'border border-sf-red/60 bg-black/70 text-sf-red-soft backdrop-blur'
+        ? '!border !border-zv-orange/60 !bg-zv-black/80 !text-zv-orange-soft backdrop-blur-sm'
         : tone === 'light'
-          ? 'border border-sf-red/50 text-sf-red'
-          : 'border border-sf-red/40 bg-sf-red/10 text-sf-red-soft'
+          ? '!border !border-zv-orange/50 !text-zv-orange'
+          : '!border !border-zv-orange/40 !bg-zv-orange/10 !text-zv-orange-soft'
     )}
   >
+    <span className="h-1.5 w-1.5 shrink-0 bg-zv-orange" />
     Destacada
   </span>
 );

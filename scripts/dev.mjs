@@ -48,7 +48,7 @@ const backend = run('backend', ['node_modules/tsx/dist/cli.mjs', 'watch', 'src/i
 const frontend = run('frontend', ['node_modules/vite/bin/vite.js'], 'frontend');
 
 const shutdown = (signal) => {
-  console.log(`\n[${signal}] Cerrando SF MOTOS...`);
+  console.log(`\n[${signal}] Cerrando ZAVADIVKER MOTOS...`);
   for (const p of [backend, frontend]) {
     if (!p.killed) p.kill('SIGTERM');
   }

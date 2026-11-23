@@ -1,20 +1,21 @@
 /**
- * Datos oficiales de SF MOTOS.
+ * Datos oficiales de ZAVADIVKER MOTOS.
  * Fuente única de verdad para la información institucional y comercial.
  * ⚠️ No agregar datos que no hayan sido confirmados oficialmente.
  */
 export const BUSINESS = {
-  name: 'SF MOTOS',
-  tagline: 'POTENCIA EN CADA ARRANQUE.',
+  name: 'ZAVADIVKER MOTOS',
+  tagline: 'ENDURO · OFF-ROAD · MULTIMARCA',
   activity: 'Venta de motocicletas 0 km y usadas.',
-  specialty: 'Motocicletas 0 km y usadas en Juan B. Alberdi, Tucumán.',
+  specialty: 'Concesionaria multimarca especializada en enduro, motocross y off-road.',
+  // Dirección provisoria heredada de la instalación anterior, a confirmar por el cliente.
   address: '9 de Julio 119, Juan B. Alberdi, Tucumán, Argentina',
   addressLink:
     'https://maps.google.com/?q=9+de+Julio+119+Juan+B.+Alberdi+Tucuman+Argentina',
-  phoneDisplay: '381 201-1613',
-  whatsappNumber: '5493812011613',
-  whatsappGeneralMessage: 'Hola! Quisiera recibir información sobre las motos de SF MOTOS.',
-  whatsappLink: 'https://wa.me/5493812011613',
+  phoneDisplay: '381 405-7335 9',
+  whatsappNumber: '54938140573359',
+  whatsappGeneralMessage: 'Hola! Quisiera recibir información sobre las motos de ZAVADIVKER MOTOS.',
+  whatsappLink: 'https://wa.me/54938140573359',
   shippingLabel: 'Consultá por envíos',
 } as const;
 
@@ -50,6 +51,6 @@ export const buildBikeWhatsAppLink = (bike: {
 }) => {
   const label = bike.brand?.name && bike.model ? `${bike.brand.name} ${bike.model}` : bike.title;
   return buildWhatsAppLink(
-    `Hola! Estoy interesado en la ${label} que vi publicada en SF MOTOS. ¿Me podrían brindar más información?`
+    `Hola! Estoy interesado en la ${label} que vi publicada en ZAVADIVKER MOTOS. ¿Me podrían brindar más información?`
   );
 };

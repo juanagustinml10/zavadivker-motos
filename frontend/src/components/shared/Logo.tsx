@@ -1,43 +1,86 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 
+export type LogoVariant = 'stacked' | 'lockup' | 'compact' | 'header' | 'icon';
+
 interface LogoProps {
   className?: string;
   alt?: string;
-  /** true cuando el logo se apoya sobre fondo oscuro: usa la versión blanca. */
+  /** Fondo oscuro: tinta clara derivada del arte original. */
   onDark?: boolean;
-  /** Sólo el isotipo SF, para espacios reducidos (favicon, avatar, etc.). */
+  /**
+   * `header`: isotipo + "ZAVADIVKER" en tinta plana y "MOTOS" en naranja.
+   * `lockup`: isotipo + wordmark en una línea. `compact`: sólo wordmark.
+   * `stacked`: composición original. `icon`: isotipo para espacios mínimos.
+   */
+  variant?: LogoVariant;
+  /** @deprecated Usar `variant="icon"`. */
   icon?: boolean;
 }
 
-const ASSETS = {
-  dark: { light: '/logo/sf-motos-black.png', dark: '/logo/sf-motos-white.png', width: 653, height: 350 },
-  icon: { light: '/logo/sf-motos-icon.png', dark: '/logo/sf-motos-icon-white.png', width: 653, height: 653 },
-} as const;
+const ASSETS: Record<LogoVariant, { light: string; dark: string; width: number; height: number }> = {
+  stacked: {
+    light: '/logo/zavadivker-light.png',
+    dark: '/logo/zavadivker-dark.png',
+    width: 1084,
+    height: 928,
+  },
+  lockup: {
+    light: '/logo/zavadivker-lockup-light.png',
+    dark: '/logo/zavadivker-lockup-dark.png',
+    width: 1144,
+    height: 155,
+  },
+  compact: {
+    light: '/logo/zavadivker-compact-light.png',
+    dark: '/logo/zavadivker-compact-dark.png',
+    width: 922,
+    height: 155,
+  },
+  header: {
+    light: '/logo/zavadivker-header-light.png',
+    dark: '/logo/zavadivker-header-dark.png',
+    width: 1144,
+    height: 155,
+  },
+  icon: {
+    light: '/logo/zavadivker-icon-light.png',
+    dark: '/logo/zavadivker-icon-dark.png',
+    width: 512,
+    height: 512,
+  },
+};
 
 /**
- * Logo oficial de SF MOTOS.
- * Se generó desde el JPEG original conservando trazos y proporciones: la
- * versión "black" va sobre fondos claros y la "white" sobre fondos oscuros.
- * No se redibuja ni se reemplaza por texto.
+ * Logo oficial de ZAVADIVKER MOTOS. Las variantes se derivan del JPEG original
+ * (sin redibujar trazos) y se recomponen para que el texto sea legible en
+ * cualquier superficie, sin recuadros ni fondos que lo separen de la página.
  */
 export const Logo: React.FC<LogoProps> = ({
   className,
-  alt = 'SF MOTOS',
+  alt = 'ZAVADIVKER MOTOS',
   onDark = false,
+  variant = 'lockup',
   icon = false,
 }) => {
-  const set = icon ? ASSETS.icon : ASSETS.dark;
-  const src = onDark ? set.dark : set.light;
+  const selected: LogoVariant = icon ? 'icon' : variant;
+  const asset = ASSETS[selected];
 
   return (
-    <img
-      src={src}
-      alt={alt}
-      width={set.width}
-      height={set.height}
-      className={cn('h-auto w-auto select-none object-contain', className)}
-      draggable={false}
-    />
+    <span
+      className={cn(
+        'inline-flex shrink-0 items-center justify-center leading-none',
+        className,
+      )}
+    >
+      <img
+        src={onDark ? asset.dark : asset.light}
+        alt={alt}
+        width={asset.width}
+        height={asset.height}
+        className="block h-full w-auto max-w-full object-contain"
+        draggable={false}
+      />
+    </span>
   );
 };

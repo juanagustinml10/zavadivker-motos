@@ -1,12 +1,17 @@
-# SF MOTOS — Plataforma web
+# ZAVADIVKER MOTOS — Plataforma web
 
-Sitio público y panel administrativo para **SF MOTOS**: catálogo de motocicletas 0 km y
-usadas, fichas de detalle, comparador, favoritos, consultas por WhatsApp y gestión
-privada de publicaciones e imágenes.
+Sitio público y panel administrativo de **ZAVADIVKER MOTOS**, concesionaria
+multimarca especializada en motos de **enduro, motocross y off-road**.
 
-**Datos oficiales:** 9 de Julio 119, Juan B. Alberdi, Tucumán, Argentina · WhatsApp/Tel
-381 201-1613 · `POTENCIA EN CADA ARRANQUE.` No se inventan garantías, financiación,
-promociones, envíos ni especialidades no confirmadas.
+Catálogo de motocicletas 0 km y usadas, fichas individuales con galería de
+fotos, filtros por condición/marca/uso, comparador, favoritos, consultas por
+WhatsApp y gestión privada de publicaciones e imágenes.
+
+> Datos oficiales centralizados en `frontend/src/lib/constants.ts`: WhatsApp
+> **381 405-7335 9** (`wa.me/54938140573359`). La dirección es provisoria
+> heredada de la instalación anterior (**9 de Julio 119, Juan B. Alberdi,
+> Tucumán**) y queda pendiente de confirmación con el cliente. No se inventan
+> garantías, cuotas, tasas, envíos ni promociones.
 
 ## Stack
 
@@ -17,30 +22,42 @@ promociones, envíos ni especialidades no confirmadas.
 | ORM / DB | Prisma 6 + PostgreSQL (Neon recomendado) |
 | Autenticación | JWT access + refresh con sesiones en DB y contraseñas hasheadas con bcryptjs |
 | Validación | Zod |
-| Imágenes | Multer; `local` en desarrollo, `db` (BYTEA en Postgres) para producción |
+| Imágenes | Multer + Sharp → WebP full/miniatura; `local` en desarrollo, `db` (BYTEA) en producción |
 
-> El diseño visual es propio de SF MOTOS: paleta negro/rojo/blanco, tipografía
-> condensada y geometría recta. No se usa Framer Motion.
+## Identidad visual
+
+Sistema propio ZV: negro `#07080A`, naranja `#F45B21` (del logo oficial) y
+blanco roto `#F6F5F2`; tipografías **Archivo** (display) y **Space Grotesk**
+(cuerpo). Fotografía protagonista, composiciones editoriales, animación de
+entrada suave y acentos naranjas puntuales. El logo oficial se procesa desde
+`logo zavadivker.jpeg` sin redibujarlo: se separan el isotipo, el wordmark y el
+bloque naranja para generar variantes transparentes para fondos claros y
+oscuros. Hay cuatro composiciones —apilada, `lockup` (horizontal), `compact`
+(sólo wordmark) y `header` (`ZAVADIVKER` en tinta plana y `MOTOS` en naranja
+para la navbar)— más isotipo, favicon con la `Z` original e imagen Open Graph. El
+componente `Logo` elige la composición y el contraste según la superficie; el
+hero no muestra logo, sólo la barra de navegación.
 
 ## Estructura
 
 ```text
 .
 ├── frontend/                 # SPA pública + panel admin
-│   ├── public/logo/          # variantes SF generadas desde el JPEG oficial
+│   ├── public/logo/          # logo apilado, lockups, compact, isotipos y OG
 │   └── src/
 │       ├── components/       # ui/, shared/, public/, admin/
 │       ├── pages/            # public/, admin/
 │       ├── layout/           # PublicLayout, Navbar, Footer, admin/AdminLayout
 │       ├── services/         # clientes API (bikes, auth, stats)
 │       ├── stores/           # favoritos y comparador (localStorage)
-│       └── lib/constants.ts  # datos oficiales de SF MOTOS
+│       └── lib/constants.ts  # datos oficiales de ZAVADIVKER MOTOS
 ├── backend/                  # API REST
 │   ├── src/                  # app, config, middleware, routes, controllers, services
 │   ├── prisma/               # schema, migrations, seed
 │   └── .env.example
 ├── scripts/dev.mjs           # levanta backend + frontend juntos
-└── vercel.json               # configuración de servicios/rewrites (si se usa Vercel)
+├── tools/                    # generación de assets del logo y las fotos editoriales
+└── vercel.json               # configuración de servicios/rewrites
 ```
 
 ## Puesta en marcha
@@ -56,7 +73,7 @@ Si preferís hacerlo por separado:
 ```bash
 cd backend
 cp .env.example .env
-# Editá .env con tu propia PostgreSQL y secretos
+# Editá .env con tu propia PostgreSQL y secretos nuevos
 npm install
 npx prisma migrate deploy
 npm run prisma:seed
@@ -72,6 +89,18 @@ npm run dev
 > `node node_modules/tsx/dist/cli.mjs watch src/index.ts` en `backend` y
 > `node node_modules/vite/bin/vite.js` en `frontend`.
 
+### Regenerar assets del logo y las fotografías
+
+```bash
+py -3 tools/zavadivker-logo-assets.py
+node tools/zavadivker-image-assets.mjs
+```
+
+El script de fotografías descarga imágenes reales de motocicletas publicadas
+en Unsplash vía Wikimedia Commons bajo CC0 1.0 y genera los WebP editoriales.
+No se reutilizó ninguna foto del proyecto SF MOTOS. Créditos y enlaces a las
+fuentes originales: `IMAGE_CREDITS.md`.
+
 ## Compilación y chequeos
 
 ```bash
@@ -81,20 +110,19 @@ cd frontend && npm run lint
 cd backend && npx tsc --noEmit
 ```
 
-Si `prisma generate` falla con `EPERM` en Windows, detené el dev server del backend:
-el query engine queda bloqueado.
+Si `prisma generate` falla con `EPERM` en Windows, detené el dev server del
+backend: el query engine queda bloqueado.
 
 ## Endpoints principales
 
-- `GET /health` (solo verifica que Express esté vivo)
+- `GET /health`
 - `POST /api/auth/login`, `POST /api/auth/refresh`, `POST /api/auth/logout`
-- `GET /api/bikes` con filtros `q`, `brand`, `model`, `year`, `condition`, `priceMin`,
-  `priceMax`, `status`, `featured`, `page`, `limit`
+- `GET /api/bikes` con filtros `q`, `brand`, `model`, `year`, `condition`, `usage`, `priceMin`, `priceMax`, `status`, `featured`, `page`, `limit`
 - `GET /api/bikes/slug/:slug`, `GET /api/bikes/:id`, `GET /api/bikes/brands`
 - `POST /api/bikes`, `PATCH /api/bikes/:id`, `DELETE /api/bikes/:id` (auth)
-- `POST /api/bikes/:id/images` (auth, multipart `images[]`)
-- `PATCH /api/bikes/:id/images/:imageId/primary`, `DELETE /api/bikes/:id/images/:imageId` (auth)
+- `POST /api/bikes/:id/images`, `PATCH /api/bikes/:id/images/order`, `PATCH /api/bikes/:id/images/:imageId/primary`, `DELETE /api/bikes/:id/images/:imageId` (auth)
 - `POST /api/bikes/:id/visits` (público)
+- `GET /api/images/:key?variant=thumb`
 - `GET /api/stats/dashboard`, `GET /api/stats/recent-bikes` (auth)
 
 ## Variables de entorno
@@ -104,26 +132,27 @@ Ver `backend/.env.example` y `frontend/.env.example`. Nunca commitear `.env`.
 | Variable | Descripción |
 | --- | --- |
 | `DATABASE_URL` / `DATABASE_URL_UNPOOLED` | Cadenas pooled y directa de tu propia Neon/Postgres |
-| `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` | Secretos aleatorios y distintos |
+| `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` | Secretos aleatorios nuevos y distintos |
 | `PUBLIC_BASE_URL` | URL HTTPS pública de la API, necesaria con `STORAGE_DRIVER=db` |
-| `CORS_ORIGIN` | Orígenes permitidos del frontend SF |
+| `CORS_ORIGIN` | Orígenes permitidos del frontend ZAVADIVKER |
 | `STORAGE_DRIVER` | `local` (desarrollo) o `db` (producción) |
+| `VITE_API_BASE_URL` | URL del backend propio (variable de build del frontend) |
 | `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` | Credenciales iniciales del admin |
 
 ## Estado actual
 
-- El rediseño visual y funcional está implementado en código.
-- **No hay base de datos de SF MOTOS configurada**: sin `DATABASE_URL` real, `/api/bikes`
-  y `/api/bikes/brands` devuelven error y el sitio público muestra estados vacíos.
-- El panel admin no fue validado end-to-end contra una DB real.
-- `origin` todavía apunta al repositorio heredado; ver `DEPLOYMENT.md` antes de publicar.
+- Rediseño visual integral implementado en código; funcionalidad completa conservada.
+- **Sin base de datos propia configurada**: con `backend/.env` placeholder, el
+  sitio público muestra estados vacíos. Eso es un estado de datos, no un error de API.
+- El frontend **no apunta al backend de SF MOTOS**: en producción hay que definir
+  `VITE_API_BASE_URL` con el backend nuevo.
+- Repositorio, base de datos y despliegue propios: pendientes. Ver `DEPLOYMENT.md`.
+- Las claves `localStorage` (`sf_motos_*`) se conservan por compatibilidad de
+  sesión/favoritos/comparador; son internas, no texto visible.
 
 ## Aclaraciones
 
-- No hay datos ficticios cargados como publicaciones reales; el catálogo arranca vacío.
-- Las imágenes sin foto muestran un marcador "Foto no disponible", nunca ejemplos
-  presentados como stock real.
+- No hay publicaciones ficticias: el catálogo arranca vacío y se carga desde el panel.
+- Las imágenes sin foto muestran "Foto no disponible".
 - Favoritos y comparador persisten solo en `localStorage` del navegador.
 - No se implementó calculadora de financiación ni de permuta.
-
-El detalle de despliegue y las tareas externas pendientes están en `DEPLOYMENT.md`.

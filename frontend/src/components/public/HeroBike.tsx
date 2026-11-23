@@ -1,4 +1,4 @@
-import betaPhoto from '@/assets/beta-300rr-freenduro.jpg';
+import motoCrossPhoto from '@/assets/moto-cross.webp';
 import { cn } from '@/lib/utils';
 
 interface HeroBikeProps {
@@ -8,18 +8,18 @@ interface HeroBikeProps {
 }
 
 /**
- * Fotografía editorial usada en el hero y en la sección institucional.
- * Es una motocicleta de enduro en un camino de montaña (Beta RR Freenduro,
- * foto de Jimmy Boakes / Jix31, CC BY 4.0). Se muestra como imagen editorial:
- * no representa una unidad publicada ni disponible en el catálogo de SF MOTOS.
+ * Fotografía editorial usada en la sección institucional.
+ * Muestra una motocicleta de motocross en terreno embarrado (foto de Gabriel
+ * Sanchez, CC0). No representa una unidad publicada ni disponible en el
+ * catálogo de ZAVADIVKER MOTOS.
  */
 export const HeroBike = ({ className, priority = false }: HeroBikeProps) => (
   <img
-    src={betaPhoto}
-    alt="Motocicleta de enduro en un camino de montaña"
+    src={motoCrossPhoto}
+    alt="Motocicleta de motocross en acción sobre terreno embarrado"
     loading={priority ? 'eager' : 'lazy'}
     fetchPriority={priority ? 'high' : undefined}
     decoding="async"
-    className={cn('block h-full w-full object-cover', className)}
+    className={cn('block h-full w-full object-cover contrast-[1.05] brightness-[0.92]', className)}
   />
 );

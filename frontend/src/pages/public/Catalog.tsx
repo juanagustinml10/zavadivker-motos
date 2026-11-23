@@ -190,21 +190,21 @@ export const Catalog: React.FC = () => {
   }, [filters]);
 
   const renderFilterPanel = (prefix: string) => (
-    <div className="panel relative p-5 sm:p-6">
-      <div className="absolute inset-x-0 top-0 h-[3px] bg-sf-red" aria-hidden="true" />
-      <div className="mb-5 flex items-center justify-between border-b border-white/8 pb-4">
-        <span className="flex items-center gap-2 font-display text-xs font-extrabold uppercase tracking-[0.22em] text-white">
-          <SlidersHorizontal size={15} className="text-sf-red" />
+    <div className="relative border border-zv-line bg-zv-panel p-5 sm:p-6">
+      <span className="pointer-events-none absolute inset-y-0 left-0 w-[3px] bg-zv-orange" aria-hidden="true" />
+      <div className="mb-6 flex items-center justify-between border-b border-zv-line pb-4">
+        <span className="flex items-center gap-3 font-display text-xs font-black uppercase tracking-[0.22em] text-white">
+          <SlidersHorizontal size={15} className="text-zv-orange" />
           Filtros
         </span>
         {hasActiveFilters && (
-          <button type="button" onClick={clearFilters} className="flex items-center gap-1 font-display text-[11px] font-bold uppercase tracking-widest text-sf-red-soft transition-colors hover:text-white">
+          <button type="button" onClick={clearFilters} className="flex min-h-11 items-center gap-1 font-display text-[11px] font-bold uppercase tracking-widest text-zv-orange-soft transition-colors hover:text-white">
             <X size={13} /> Limpiar
           </button>
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-12">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-5 md:grid-cols-12">
         <div className="col-span-2 space-y-2 md:col-span-3">
           <label className="field-label" htmlFor={`${prefix}-marca`}>Marca</label>
           <select id={`${prefix}-marca`} value={filters.brand ?? ''} onChange={(e) => setFilter('brand', e.target.value || undefined)} className="field">
@@ -255,8 +255,8 @@ export const Catalog: React.FC = () => {
             className={cn(
               'flex h-12 w-full items-center justify-center gap-2 border font-display text-xs font-extrabold uppercase tracking-[0.2em] transition-colors',
               filters.featured
-                ? 'border-sf-red bg-sf-red text-white'
-                : 'border-white/15 text-gray-300 hover:border-sf-red hover:text-white'
+                ? 'border-zv-orange bg-zv-orange text-zv-black'
+                : 'border-white/15 text-zv-ink-300 hover:border-zv-orange hover:text-white'
             )}
           >
             <BadgeCheck size={16} />
@@ -268,11 +268,11 @@ export const Catalog: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-sf-black text-sf-white">
+    <div className="min-h-dvh bg-zv-black text-zv-white">
       <PageIntro
         index="01"
-        eyebrow="Inventario SF MOTOS"
-        title={<>Encontrá tu <span className="text-sf-red">próxima moto</span></>}
+        eyebrow="Inventario ZAVADIVKER MOTOS"
+        title={<>Encontrá tu <span className="text-zv-orange">próxima moto</span></>}
         outline="MOTOS"
         size="compact"
         description={
@@ -286,9 +286,9 @@ export const Catalog: React.FC = () => {
         }
       >
         {/* Buscador */}
-        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+        <div className="mt-7 flex flex-col gap-3 sm:flex-row">
           <div className="relative flex-1">
-            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-sf-red" aria-hidden="true" />
+            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-zv-orange" aria-hidden="true" />
             <input
               type="search"
               placeholder="Marca, modelo, año, cilindrada..."
@@ -307,12 +307,12 @@ export const Catalog: React.FC = () => {
           >
             <SlidersHorizontal size={18} />
             {openFilters ? 'Ocultar' : 'Filtros'}
-            <ChevronDown size={15} className={cn('transition-transform', openFilters && 'rotate-180')} />
+            <ChevronDown size={15} className={cn('transition-transform duration-300', openFilters && 'rotate-180')} />
           </button>
         </div>
 
         {/* Panel de filtros */}
-        <div id="filtros-catalogo" className="mt-3">
+        <div id="filtros-catalogo" className="mt-4">
           <div className="hidden md:block">{renderFilterPanel('desktop')}</div>
           <div className={cn('md:hidden', openFilters ? 'block' : 'hidden')}>
             <div className="pt-1">{renderFilterPanel('movil')}</div>
@@ -321,22 +321,23 @@ export const Catalog: React.FC = () => {
       </PageIntro>
 
       {/* Resultados */}
-      <section id="resultados" className="scroll-mt-24 bg-sf-paper text-sf-black">
-        <div className="container-sf py-8 sm:py-10">
-          <div className="mb-6 flex flex-col gap-5 border-t-2 border-sf-red pt-5 sm:flex-row sm:items-end sm:justify-between">
+      <section id="resultados" className="relative scroll-mt-24 bg-zv-black">
+        <div className="track-lines pointer-events-none absolute inset-0 opacity-40" aria-hidden="true" />
+        <div className="container-zv relative py-10 sm:py-14">
+          <div className="mb-8 flex flex-col gap-5 border-t border-zv-line pt-6 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <span className="section-index !text-sf-red">Resultados</span>
-              <p className="mt-3 font-display text-3xl font-extrabold uppercase leading-none sm:text-4xl">
+              <p className="micro-label text-zv-orange-soft">Resultados</p>
+              <p className="mt-3 font-display text-3xl font-black uppercase leading-none tracking-[-0.04em] text-white sm:text-4xl">
                 {error ? 'Sin conexión' : `Mostrando ${bikes.length} de ${total}`}
               </p>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-              <label htmlFor="ordenar" className="field-label !text-black/50">Ordenar por</label>
+              <label htmlFor="ordenar" className="field-label">Ordenar por</label>
               <select
                 id="ordenar"
                 value={sort}
                 onChange={(e) => setFilter('sort', e.target.value)}
-                className="h-11 border border-black/15 bg-white px-4 font-display text-xs font-bold uppercase tracking-wider text-sf-black outline-none transition-colors focus:border-sf-red sm:min-w-[190px]"
+                className="field sm:min-w-[190px]"
               >
                 {SORT_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>{option.label}</option>
@@ -347,10 +348,8 @@ export const Catalog: React.FC = () => {
 
           {/* Accesos por uso: filtran el inventario por la disciplina de la moto. */}
           <div className="mb-10">
-            <p className="mb-3 font-display text-[10px] font-bold uppercase tracking-[0.3em] text-black/45">
-              Explorá por uso
-            </p>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <p className="micro-label mb-4 text-zv-ink-500">Explorá por uso</p>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {BIKE_USAGES.map((item) => {
                 const active = filters.usage === item.value;
                 return (
@@ -360,24 +359,24 @@ export const Catalog: React.FC = () => {
                     aria-pressed={active}
                     onClick={() => setFilter('usage', active ? undefined : item.value)}
                     className={cn(
-                      'group relative flex min-h-[150px] flex-col items-start justify-between overflow-hidden border p-6 text-left transition-colors sm:min-h-[170px]',
+                      'group relative flex min-h-[110px] flex-col items-start justify-center gap-2 border px-5 py-5 text-left transition-colors sm:min-h-[130px] sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-7',
                       active
-                        ? 'border-sf-red bg-sf-red text-white'
-                        : 'border-black/15 bg-white text-sf-black hover:border-sf-red'
+                        ? 'border-zv-orange bg-zv-orange text-zv-black'
+                        : 'border-zv-line bg-zv-panel text-white hover:border-zv-orange/70'
                     )}
                   >
                     <span
                       className={cn(
-                        'font-display text-2xl font-extrabold uppercase leading-none tracking-tight sm:text-3xl',
-                        active ? 'text-white' : 'text-sf-black group-hover:text-sf-red'
+                        'font-display text-2xl font-black uppercase leading-none tracking-[-0.04em] sm:text-3xl',
+                        active ? 'text-zv-black' : 'text-white group-hover:text-zv-orange-soft'
                       )}
                     >
                       {item.title}
                     </span>
                     <span
                       className={cn(
-                        'mt-5 flex items-center gap-2 font-display text-[10px] font-bold uppercase tracking-[0.25em]',
-                        active ? 'text-white/85' : 'text-black/45 group-hover:text-sf-red'
+                        'flex items-center gap-2 font-display text-[10px] font-bold uppercase tracking-[0.22em]',
+                        active ? 'text-zv-black/70' : 'text-zv-ink-500 group-hover:text-zv-orange-soft'
                       )}
                     >
                       {active ? <Check size={15} /> : <ArrowRight size={15} />}
@@ -391,39 +390,37 @@ export const Catalog: React.FC = () => {
 
           {loading ? (
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {Array.from({ length: 6 }, (_, i) => <SkeletonCard key={i} tone="light" />)}
+              {Array.from({ length: 6 }, (_, i) => <SkeletonCard key={i} />)}
             </div>
           ) : error ? (
             <ErrorState
               compact
-              tone="light"
               title="No se pudo cargar el catálogo"
               className="mx-auto max-w-2xl"
               onRetry={() => setReloadKey((key) => key + 1)}
             />
           ) : bikes.length === 0 ? (
             <EmptyState
-              tone="light"
               icon={<SearchX size={30} />}
               code="00"
               title={<>Sin resultados</>}
               description="Ninguna moto coincide con tu búsqueda. Probá con otros filtros."
               actions={hasActiveFilters ? (
-                <button type="button" onClick={clearFilters} className="btn btn-red px-6 py-3 text-xs">
+                <button type="button" onClick={clearFilters} className="btn btn-orange px-6 py-3 text-xs">
                   <X size={15} /> Limpiar filtros
                 </button>
               ) : undefined}
             />
           ) : (
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {bikes.map((bike) => <BikeCard key={bike.id} bike={bike} tone="light" />)}
+              {bikes.map((bike) => <BikeCard key={bike.id} bike={bike} />)}
             </div>
           )}
 
           {/* Paginación */}
           {!error && !loading && totalPages > 1 && (
-            <nav className="mt-12 flex flex-col items-center gap-4" aria-label="Paginación del catálogo">
-              <p className="font-display text-[10px] font-bold uppercase tracking-[0.3em] text-black/45">
+            <nav className="mt-12 flex flex-col items-center gap-4 border-t border-zv-line pt-8" aria-label="Paginación del catálogo">
+              <p className="micro-label text-zv-ink-500">
                 Página {page} de {totalPages}
               </p>
               <div className="flex flex-wrap items-center justify-center gap-2">
@@ -432,7 +429,7 @@ export const Catalog: React.FC = () => {
                   onClick={() => goToPage(page - 1)}
                   disabled={page === 1}
                   aria-label="Página anterior"
-                  className="flex h-11 w-11 items-center justify-center border border-black/15 text-black/60 transition-colors hover:border-sf-red hover:text-sf-red disabled:opacity-30"
+                  className="flex h-11 w-11 items-center justify-center border border-white/15 text-zv-ink-300 transition-colors hover:border-zv-orange hover:text-zv-orange disabled:opacity-30"
                 >
                   <ChevronLeft size={18} />
                 </button>
@@ -445,8 +442,8 @@ export const Catalog: React.FC = () => {
                     className={cn(
                       'h-11 w-11 font-display text-sm font-extrabold transition-colors',
                       number === page
-                        ? 'bg-sf-red text-white'
-                        : 'border border-black/15 text-black/60 hover:border-sf-red hover:text-sf-red'
+                        ? 'bg-zv-orange text-zv-black'
+                        : 'border border-white/15 text-zv-ink-300 hover:border-zv-orange hover:text-zv-orange'
                     )}
                   >
                     {number}
@@ -457,7 +454,7 @@ export const Catalog: React.FC = () => {
                   onClick={() => goToPage(page + 1)}
                   disabled={page === totalPages}
                   aria-label="Página siguiente"
-                  className="flex h-11 w-11 items-center justify-center border border-black/15 text-black/60 transition-colors hover:border-sf-red hover:text-sf-red disabled:opacity-30"
+                  className="flex h-11 w-11 items-center justify-center border border-white/15 text-zv-ink-300 transition-colors hover:border-zv-orange hover:text-zv-orange disabled:opacity-30"
                 >
                   <ChevronRight size={18} />
                 </button>

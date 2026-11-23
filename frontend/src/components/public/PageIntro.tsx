@@ -16,9 +16,8 @@ interface PageIntroProps {
 }
 
 /**
- * Cabecera de página reutilizable. Cada página elige tono, alineación,
- * palabra de fondo y contenido extra para construir una composición propia.
- * La variante compact mantiene la identidad pero reduce la altura y el título.
+ * Cabecera editorial de página: tipografía ancha, filete naranja y palabra
+ * de fondo. Cada sección elige tono, tamaño y contenido extra.
  */
 export const PageIntro: React.FC<PageIntroProps> = ({
   index,
@@ -35,74 +34,102 @@ export const PageIntro: React.FC<PageIntroProps> = ({
 }) => {
   const light = tone === 'light';
   const compact = size === 'compact';
+  const large = size === 'large';
 
   const titleSize = compact
-    ? 'mt-2 text-3xl leading-[0.95] sm:text-4xl lg:text-5xl'
-    : size === 'large'
-      ? 'mt-4 text-6xl leading-[0.85] sm:text-8xl lg:text-9xl'
-      : 'mt-4 text-5xl leading-[0.85] sm:text-7xl';
+    ? 'text-[clamp(2.5rem,7vw,4.5rem)]'
+    : large
+      ? 'text-[clamp(3.6rem,10vw,8rem)]'
+      : 'text-[clamp(3.2rem,9vw,7rem)]';
+
+  // En mobile el mínimo del clamp original recortaba títulos largos como "FINANCIÓN".
+  const mobileTitleSize = compact
+    ? 'max-sm:text-[clamp(2rem,9vw,3.2rem)]'
+    : large
+      ? 'max-sm:text-[clamp(2.35rem,10vw,3.6rem)]'
+      : 'max-sm:text-[clamp(2.2rem,9vw,3.2rem)]';
 
   return (
     <section
       className={cn(
-        'relative overflow-hidden border-b',
-        light ? 'border-black/10 bg-sf-paper text-sf-black' : 'border-white/5 bg-sf-black text-white',
+        'relative isolate overflow-hidden border-b',
+        light ? 'border-black/10 bg-zv-paper text-zv-black' : 'border-zv-line bg-zv-black text-zv-white',
         className
       )}
     >
-      {!light && <div className="radial-glow pointer-events-none absolute -right-40 -top-52 h-[36rem] w-[36rem] opacity-70" aria-hidden="true" />}
+      <div className="track-lines pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
+      {!light && (
+        <div className="pointer-events-none absolute -right-40 -top-52 h-[36rem] w-[36rem] rounded-full bg-zv-orange/[0.07] blur-3xl" aria-hidden="true" />
+      )}
+      <span className="pointer-events-none absolute inset-y-0 left-0 w-[3px] bg-zv-orange" aria-hidden="true" />
+
       {outline && (
         <span
           aria-hidden="true"
           className={cn(
-            'pointer-events-none absolute bottom-[-0.3em] right-[-0.05em] hidden select-none font-display font-extrabold leading-none lg:block',
-            compact ? 'text-[9rem] opacity-60 xl:text-[13rem]' : 'text-[15rem] xl:text-[20rem]',
-            light ? 'text-outline-light' : 'text-outline'
+            'pointer-events-none absolute -bottom-[0.16em] right-[-0.04em] hidden select-none font-display font-black leading-none lg:block',
+            compact ? 'text-[11rem] xl:text-[15rem]' : large ? 'text-[17rem] xl:text-[24rem]' : 'text-[15rem] xl:text-[21rem]',
+            light ? 'text-outline-light opacity-70' : 'text-outline opacity-60'
           )}
         >
           {outline}
         </span>
       )}
-      <div className={cn('container-sf relative', compact ? 'py-6 sm:py-8' : 'py-14 sm:py-20', align === 'center' && 'text-center')}>
-        <div className={cn('flex flex-wrap items-center gap-3', align === 'center' && 'justify-center')}>
+
+      <div
+        className={cn(
+          'container-zv relative',
+          compact ? 'py-9 sm:py-12' : large ? 'py-16 sm:py-24' : 'py-14 sm:py-20',
+          align === 'center' && 'text-center'
+        )}
+      >
+        <div className={cn('flex flex-wrap items-center gap-4', align === 'center' && 'justify-center')}>
           {index && (
-            <span className={cn(
-              'font-display',
-              compact ? 'text-[10px] font-bold tracking-[0.18em] text-sf-red/90' : 'text-xs font-extrabold tracking-[0.2em] text-sf-red'
-            )}>
+            <span className={cn('font-sans font-bold tracking-[0.3em] text-zv-orange', compact ? 'text-[10px]' : 'text-xs')}>
               {index}
             </span>
           )}
-          <span className={cn('h-px bg-sf-red', compact ? 'w-6 opacity-70' : 'w-10')} />
-          <span className={cn(
-            'font-display font-bold uppercase',
-            compact
-              ? 'text-[9px] tracking-[0.28em] text-gray-500'
-              : cn('text-[10px] tracking-[0.35em]', light ? 'text-black/50' : 'text-gray-400')
-          )}>
+          <span className="h-px w-10 bg-zv-orange/70" aria-hidden="true" />
+          <span
+            className={cn(
+              'font-sans font-bold uppercase tracking-[0.3em]',
+              compact ? 'text-[10px]' : 'text-[11px]',
+              light ? 'text-black/50' : 'text-zv-ink-400'
+            )}
+          >
             {eyebrow}
           </span>
         </div>
+
         <h1
           className={cn(
-            'font-display font-extrabold uppercase',
+            'relative mt-5 font-display font-black uppercase leading-[0.85] tracking-[-0.05em] break-words max-sm:leading-[0.92]',
             titleSize,
-            light ? 'text-sf-black' : 'text-white'
+            mobileTitleSize,
+            light ? 'text-zv-black' : 'text-white'
           )}
         >
           {title}
         </h1>
+
         {description && (
-          <div className={cn(
-            'max-w-2xl leading-relaxed',
-            compact ? 'mt-2 text-sm' : 'mt-5 text-base',
-            align === 'center' && 'mx-auto',
-            light ? 'text-black/60' : 'text-gray-400'
-          )}>
+          <div
+            className={cn(
+              'relative mt-6 max-w-2xl text-sm leading-relaxed sm:text-base',
+              align === 'center' && 'mx-auto',
+              light ? 'text-black/60' : 'text-zv-ink-400'
+            )}
+          >
             {description}
           </div>
         )}
-        {actions && <div className={cn('flex flex-col gap-3 sm:flex-row', compact ? 'mt-5' : 'mt-7', align === 'center' && 'sm:justify-center')}>{actions}</div>}
+
+        {actions && (
+          <div className={cn('relative mt-8 flex flex-col gap-3 sm:flex-row', align === 'center' && 'sm:justify-center')}>
+            {actions}
+          </div>
+        )}
+
         {children}
       </div>
     </section>

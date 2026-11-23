@@ -47,14 +47,14 @@ export const Favorites: React.FC = () => {
 
   if (ids.length === 0) {
     return (
-      <div className="container-sf flex min-h-[75vh] items-center py-12 sm:py-16">
+      <div className="container-zv flex min-h-[75vh] items-center py-12 sm:py-16">
         <EmptyState
           icon={<Heart size={30} />}
           code="00"
-          title={<>Aún no hay <span className="text-sf-red">favoritos</span></>}
+          title={<>Aún no hay <span className="text-zv-orange">favoritos</span></>}
           description="Tocá el corazón en las motos que te gusten y guardalas aquí para consultarlas después."
           actions={
-            <Link to="/motos" className="btn btn-red px-7 py-4 text-xs">
+            <Link to="/motos" className="btn btn-orange px-7 py-4 text-xs">
               Explorar catálogo <ChevronRight size={16} />
             </Link>
           }
@@ -65,12 +65,12 @@ export const Favorites: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-sf-black pb-16 text-sf-white">
-      {/* 01 / Encabezado */}
+    <div className="min-h-dvh bg-zv-black pb-[calc(5rem+env(safe-area-inset-bottom))] text-zv-white sm:pb-20">
+      {/* Encabezado */}
       <PageIntro
         index="01"
         eyebrow="Tu garaje digital"
-        title={<>Favoritos</>}
+        title={<>Favoritos<span className="text-zv-orange">.</span></>}
         outline="GARAGE"
         description={
           <p>
@@ -85,12 +85,11 @@ export const Favorites: React.FC = () => {
         }
       />
 
-      {/* 02 / Listado */}
-      <section className="container-sf py-12 sm:py-16">
-        <div className="mb-6 flex items-center gap-3">
-          <span className="font-display text-xs font-extrabold tracking-[0.2em] text-sf-red">02</span>
-          <span className="h-px w-10 bg-sf-red" />
-          <span className="font-display text-[10px] font-bold uppercase tracking-[0.35em] text-gray-500">Motos guardadas</span>
+      {/* Listado */}
+      <section className="container-zv py-12 sm:py-16">
+        <div className="mb-7 flex items-center gap-4">
+          <span className="race-rule" aria-hidden="true" />
+          <span className="micro-label text-zv-orange-soft">Motos guardadas</span>
         </div>
 
         {loading ? (
@@ -107,10 +106,10 @@ export const Favorites: React.FC = () => {
           <EmptyState
             icon={<SearchX size={30} />}
             code="404"
-            title={<>Ya no están <span className="text-sf-red">publicadas</span></>}
+            title={<>Ya no están <span className="text-zv-orange">publicadas</span></>}
             description="No encontramos las motos guardadas en el catálogo actual. Pueden haber dejado de estar publicadas."
             actions={
-              <Link to="/motos" className="btn btn-red px-7 py-4 text-xs">
+              <Link to="/motos" className="btn btn-orange px-7 py-4 text-xs">
                 Ver catálogo actual <ChevronRight size={16} />
               </Link>
             }
@@ -121,7 +120,7 @@ export const Favorites: React.FC = () => {
           </div>
         )}
 
-        <Link to="/motos" className="mt-10 inline-flex items-center gap-2 font-display text-xs font-bold uppercase tracking-[0.2em] text-gray-400 transition-colors hover:text-white">
+        <Link to="/motos" className="mt-10 inline-flex items-center gap-2 font-display text-xs font-bold uppercase tracking-[0.2em] text-zv-ink-400 transition-colors hover:text-white">
           <ChevronLeft size={15} /> Volver al catálogo
         </Link>
       </section>

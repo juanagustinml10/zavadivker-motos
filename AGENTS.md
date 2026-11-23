@@ -1,4 +1,9 @@
-# AGENTS.md — SF MOTOS
+# AGENTS.md — ZAVADIVKER MOTOS
+
+> Proyecto derivado de SF MOTOS con **rediseño visual integral** e identidad
+> propia. La funcionalidad se conservó; la estética, los textos de marca, el
+> logo y la configuración de API son nuevos. SF MOTOS sigue siendo otro negocio:
+> no reutilizar su repositorio, DB, URLs ni credenciales.
 
 ## Stack y disposición del repo
 
@@ -6,9 +11,9 @@ Monorepo simple **sin workspaces** (no hay `turborepo`/`nx`/workspaces de npm). 
 
 | Carpeta | Rol | Tooling |
 |---|---|---|
-| `frontend/` | SPA pública + panel admin | React 19, Vite 8, TypeScript ~7.0.2, Tailwind v4 (`@theme` en `src/index.css`, **no** en `tailwind.config.js`), Framer Motion, Zustand (persist `localStorage`), React Router 7, Axios |
-| `backend/` | API REST | Node ≥18 (probado Node 24), Express 4, TS 5.8 (typecheck only), Prisma 6, Zod, bcryptjs, JWT, Multer, Helmet |
-| `scripts/dev.mjs` | Levanta backend + frontend juntos | Spawn directo de los binarios `node_modules/vite/bin/vite.js` y `node_modules/tsx/dist/cli.mjs` con `process.execPath` y **`shell: false`** (el harness no puede lanzar `npm.cmd`/`cmd.exe`) |
+| `frontend/` | SPA pública + panel admin | React 19, Vite 8, TypeScript ~7.0.2, Tailwind v4 (`@theme` en `src/index.css`, **no** en `tailwind.config.js`), Zustand (persist `localStorage`), React Router 7, Axios, Lucide |
+| `backend/` | API REST | Node ≥18 (probado Node 24), Express 4, TS 5.8 (typecheck only), Prisma 6, Zod, bcryptjs, JWT, Multer, Sharp, Helmet |
+| `scripts/dev.mjs` | Levanta backend + frontend juntos | Spawn directo de `node_modules/vite/bin/vite.js` y `node_modules/tsx/dist/cli.mjs` con `process.execPath` y **`shell: false`** |
 
 No hay CI, no hay Dockerfiles, no hay tests.
 
@@ -16,70 +21,57 @@ No hay CI, no hay Dockerfiles, no hay tests.
 
 ### Levantar todo
 ```bash
-npm run dev        # scripts/dev.mjs → backend (tsx watch src/index.ts :4000) + frontend (vite :5173)
+npm run dev        # scripts/dev.mjs → backend (:4000) + frontend (:5173)
 npm run dev:frontend
 npm run dev:backend
 ```
-> **Windows + harness:** igual que `scripts/dev.mjs`, ejecutar si hace falta hacerlo manualmente: `node node_modules/vite/bin/vite.js` (frontend) y `node node_modules/tsx/dist/cli.mjs watch src/index.ts` (backend). `npm`/`npx` funcionan pero su shim `npm.cmd`/`cmd.exe` NO puede spawnearlo el harness (EINVAL/ENOENT).
+> **Windows + harness:** `node node_modules/vite/bin/vite.js` (frontend) y `node node_modules/tsx/dist/cli.mjs watch src/index.ts` (backend). El shim `npm.cmd`/`cmd.exe` NO puede spawnearlo el harness (EINVAL/ENOENT).
 
-### Compilar
+### Compilar y verificar
 ```bash
-npm run build            # raíz: frontend (tsc -b && vite build) → backend (tsc --noEmit && prisma generate)
-npm --prefix frontend run build
-npm --prefix backend run build
+npm run build            # frontend (tsc -b && vite build) → backend (prisma generate && tsc --noEmit)
+npx tsc --noEmit -p tsconfig.app.json   # dentro de frontend/
+npm run lint                             # dentro de frontend/, oxlint
+npx tsc --noEmit                         # dentro de backend/
 ```
-⚠️ **Gran trampa de entorno:** `backend` build falla con `EPERM` al renombrar `node_modules/.prisma/client/query_engine-windows.dll.node` si hay un dev server/tsx watch en ejecución (el query engine está cargado y bloqueado por Windows). **Detener el backend dev server antes de `prisma generate`.**
+⚠️ `prisma generate` falla con `EPERM` al renombrar el query engine si hay un dev server/tsx watch en ejecución. **Detener el backend antes de buildbackend**. No existe `tsc` en el root.
 
-### Typecheck / lint
-```bash
-cd frontend && npx tsc --noEmit -p tsconfig.app.json   # el raíz NO resuelve tsc
-cd frontend && npm run lint                             # oxlint, warnings OK, 0 errors esperados
-cd backend && npx tsc --noEmit                          # solo typecheck; el runtime usa tsx
-```
-No existe `tsc` en el root; siempre invocarlo con `--prefix` o dentro de cada carpeta.
+## Identidad visual (no volver a SF)
 
-## Estado real (verificado) — no suponer
+- Colores: `--color-zv-black: #07080A`, `--color-zv-orange: #F45B21`, `--color-zv-white: #F6F5F2` y superficies `--color-zv-*`. Todo en `frontend/src/index.css` (`@theme` de Tailwind v4).
+- Tipografías: **Archivo** (display, `font-display`) y **Space Grotesk** (cuerpo, `font-sans`).
+- Clases base: `container-zv`, `btn`, `btn-orange`, `btn-ghost`, `eyebrow`, `panel`, `field`, `field-label`, `tag`, `reveal` (componente `Reveal`).
+- **Logo oficial:** fuente original `logo zavadivker.jpeg` (raíz, intacta). Se procesa con `py -3 tools/zavadivker-logo-assets.py`: se separan isotipo, wordmark y bloque naranja sin redibujar, y se generan `zavadivker-light/dark.png` (apilado), `zavadivker-lockup-light/dark.png` (horizontal), `zavadivker-compact-light/dark.png` (sólo wordmark), `zavadivker-header-light/dark.png` (isotipo + `ZAVADIVKER` en tinta plana y `MOTOS` en naranja), isotipos, favicon (la `Z` original), apple-touch-icon e imagen OG. **No redibujar, no inventar SVG; el naranja original no se modifica.** El componente `Logo` elige composición (`stacked`/`lockup`/`compact`/`header`/`icon`) y contraste según `onDark`, sin tarjetas blancas. `header` se usa en la navbar: `ZAVADIVKER` queda totalmente blanca sobre fondo oscuro y `MOTOS` con sus líneas en naranja; el hero no lleva logo.
+- Fotografías editoriales nuevas (Unsplash vía Wikimedia Commons, CC0 1.0) en `frontend/src/assets/*.webp`. Regenerar con `node tools/zavadivker-image-assets.mjs`. Créditos completos en `IMAGE_CREDITS.md`. **No reutilizar fotos de SF MOTOS.**
+- El catálogo usa las fotos subidas por el admin para cada moto; no se asignan fotos editoriales a publicaciones concretas para evitar mostrar un modelo incorrecto.
 
-- **Producción funcionando (20/11/2026):** backend en Vercel (`https://sf-motos-livid.vercel.app`), frontend en Cloudflare Pages (`https://sf-motos.pages.dev`), base de datos en Neon con migraciones aplicadas. Detalle completo en `DEPLOYMENT.md`.
-- **DB de producción operativa:** `/health`, `/api/bikes`, `/api/bikes/brands` y `/api/auth/login` devuelven 200. El catálogo tiene 6 publicaciones reales cargadas (último chequeo): **no eliminar ni modificar esos datos**.
-- **`backend/.env` local sigue siendo placeholder:** los endpoints en `localhost:4000` no conectan a la DB real. No confundir el entorno local con producción.
-- **Panel admin validado en vivo:** existe un usuario `ADMIN` en Neon y el login funciona contra la API de Vercel. Credenciales entregadas fuera del repo (nunca versionar).
-- **Marcas cargadas:** la tabla `Brand` de Neon tiene las 9 marcas de la franja del home (`KTM`, `HUSQVARNA`, `GASGAS`, `BETA`, `SHERCO`, `HONDA`, `YAMAHA`, `KAWASAKI`, `SUZUKI`) con IDs `cuid` válidos para el formulario. No hay endpoint para crear marcas: se insertan directamente en `Brand`.
-- **Imágenes optimizadas (21/11/2026):** `sharp` procesa cada upload en memoria y guarda solo WebP (calidad 82): full ≤1600 px + miniatura ≤500 px. `BikeImage` tiene columnas nullable de miniatura/dimensiones (migración `20261121000000_optimize_images`, ya aplicada en Neon). `GET /api/images/:key?variant=thumb` con fallback a la full. Máximo 10 fotos por moto, dedupe por checksum y subida de a un archivo por request. Helper `getThumbnailUrl()` en `frontend/src/lib/images.ts` (las URLs legacy se sirven sin cambios).
-- **Clasificación por uso (21/11/2026):** `Bike.usage` es un enum nullable `BikeUsage` (`ENDURO_CROSS` | `RUTA`); `null` = "Sin definir" para las publicaciones anteriores. Migración `20261121010000_add_bike_usage` ya aplicada en Neon. El panel admin lo carga en el paso 3 y el catálogo filtra con `?usage=...` mediante dos bloques "ENDURO/CROSS" y "RUTA" sobre el inventario. `BIKE_USAGES` en `frontend/src/lib/constants.ts` es la fuente de etiquetas.
-- **Frontend público muestra estados vacíos** por `catch → []` cuando la API falla — por diseño, no es un bug.
-- **Procesos dev huérfanos** en puertos 4000/5173 pueden persistir entre sesiones y bloquear `prisma generate` — si `EPERM` en backend, matar el tsx watch y borrar los `*.tmp` de `backend/node_modules/.prisma/client`.
+## Datos oficiales (no cambiar sin confirmación)
 
-## Datos oficiales (no cambiar)
+Nombre: **ZAVADIVKER MOTOS** · Actividad: concesionaria multimarca (motos 0 km y usadas) · Especialidad: enduro, motocross y off-road.
 
-Nombre: **SF MOTOS** · Eslogan: **POTENCIA EN CADA ARRANQUE.** · Dirección: **9 de Julio 119, Juan B. Alberdi, Tucumán, Argentina** · WhatsApp/Tel: **3812011613** → `wa.me/5493812011613` · Actividad: venta de motocicletas 0 km y usadas.
+WhatsApp/Tel: **381 405-7335 9** → `https://wa.me/54938140573359`.
 
-**No inventar años, clientes, garantías, financiación, envíos, promociones ni especialidades no confirmadas.** Constantes centralizadas en `frontend/src/lib/constants.ts` (`BUSINESS`), no duplicar inline.
+Dirección: **provisoria**, heredada de la instalación anterior: `9 de Julio 119, Juan B. Alberdi, Tucumán, Argentina`. Pendiente de confirmación; está centralizada en `BUSINESS.address` / `BUSINESS.addressLink` en `frontend/src/lib/constants.ts`. **No inventar años, clientes, garantías, financiación, envíos, promociones ni especialidades no confirmadas.**
 
-## Convenciones y trampas concretas
+## Contratos que NO se renombran
 
-- **Alias `@` → `frontend/src`** (tsconfig.app.json + vite.config.ts). Usar `@/...` en imports, no relativos `../../`.
-- **Tailwind v4:** los tokens/estilos viven en `src/index.css` (`@import "tailwindcss"` + `@theme { --color-sf-* }`). Edit `index.css`, no `tailwind.config.js` (ese archivo es legado de v3).
-- **Logo oficial:** fuente original `LOGO SF MOTOS - copia.jpeg` (raíz, intacta). El web usa `frontend/public/logo/sf-motos-black.png` y `sf-motos-white.png` (variantes sobre fondo claro/oscuro), generadas con `py tools/sf-logo-assets.py` sin redibujar el trazo. **No redibujar, no recolorear, no inventar una variante SVG.** Si se quiere nueva versión, partir del JPEG original.
-- **Créditos fotográficos a conservar** en footer: Beta RR Freenduro (CC BY 4.0, Jimmy Boakes / Jix31) y KTM forest (CC BY 3.0, Tim Gotzkowsky).
-- **Rutas públicas deben quedar dentro de `<PublicLayout>`** (wrapper de `App.tsx` con Navbar + Outlet + Footer). No agregar `<Navbar>` manualmente en páginas públicas.
-- **Panel admin:** `ProtectedRoute` lee `localStorage` (`sf_motos_access_token`); con el backend de Vercel autentica correctamente.
-- **`.gitignore` excluye `backend/.env`**; solo `.env.example` (valores placeholder). **Nunca commitear `backend/.env`** ni credenciales.
-- **Backend usa `tsx` en runtime** (no compila a `dist/` para ejecución); `tsc --noEmit` es solo validación de tipos. No esperes `dist/backend/serve.js`.
-- **Windows paths con espacios** — siempre con comillas cuando toque fuera de los scripts; `dev.mjs` se resuelve relativa al repo, no al CWD.
+- Claves `localStorage`: `sf_motos_access_token`, `sf_motos_refresh_token`, `sf_motos_user`, `sf_motos_favorites`, `sf_motos_compare`. Cambiarlas rompe sesión, favoritos y comparador.
+- `health` devuelve `service: 'zavadivkermotos-backend'`.
+- esquema Prisma, endpoints, validaciones Zod, `MAX_IMAGES_PER_BIKE=10`, `MIN/MAX_MODEL_YEAR`, `BIKE_USAGES` y reglas de borradores/visitas: sin cambios funcionales.
+- Las rutas públicas van dentro de `<PublicLayout>` (Navbar + Outlet + Footer). No agregar `<Navbar>` manualmente en páginas públicas.
+- `ProtectedRoute` lee `localStorage` y envuelve `AdminLayout`.
 
-## Verificación mínima antes de dar por terminado
+## Estado real (verificado)
 
-1. `npm run build` (raíz) — si backend falla con EPERM, detener dev server y reintentar.
-2. `cd frontend && npx tsc --noEmit -p tsconfig.app.json` — sin errores.
-3. `cd frontend && npm run lint` — sin errores (warnings permitido).
-4. Si tocaste backend data flow: verificar contra DB real u documentar que no fue verificado.
-5. Rutas públicas siguen mostrando datos/vacío sin romper; en producción verificar `/health`, `/api/bikes`, `/api/bikes/brands` y login del admin.
+- Proyecto **local**, sin base de datos propia ni deploy: `backend/.env` es placeholder. El sitio público muestra estados vacíos por `catch → []`, por diseño.
+- El frontend **no apunta al backend de SF MOTOS**: `VITE_API_BASE_URL` (o `/api` relativo) es la única configuración. Ver `DEPLOYMENT.md`.
+- `origin` de git **sigue apuntando al repo de SF MOTOS**. No hacer push hasta crear el repo nuevo y cambiar el remote.
+- Migraciones Prisma sin aplicar en una base nueva: ver `DEPLOYMENT.md`. No hay admin ni marcas cargadas todavía.
 
-## Repositorio remoto
+## Procesos dev huérfanos
 
-`origin` apunta a `https://github.com/juanagustinml10/sf-motos.git` (repo público propio de SF MOTOS). El repositorio heredado de JAY MOTOS ya no está configurado. Formato de commits: `tipo(alcance): resumen en español`.
+En Windows pueden persistir procesos en 4000/5173 entre sesiones y bloquear `prisma generate`. Si hay `EPERM`, matar el tsx watch y borrar los `*.tmp` de `backend/node_modules/.prisma/client`.
 
-## Producción
+## Repositorio y deploy
 
-Detalle y credenciales de operación en `DEPLOYMENT.md` (sin secretos en el repo). Frontend: Cloudflare Pages `sf-motos` → https://sf-motos.pages.dev. Backend: Vercel `sf-motos` → https://sf-motos-livid.vercel.app. DB: Neon con cadenas guardadas como Secret en Vercel. Ambos hosts despliegan automáticamente desde `main`. El endpoint temporal `/__sql` y su variable `MIGRATE_KEY` ya no existen: no reintroducirlos.
+Pendientes: repo GitHub nuevo, Neon propia, Vercel/Cloudflare propios, secretos JWT nuevos, seed de admin, carga de marcas y configuración de CORS. Detalle en `DEPLOYMENT.md`. Formato de commits: `tipo(alcance): resumen en español`.

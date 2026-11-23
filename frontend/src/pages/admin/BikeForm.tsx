@@ -40,16 +40,16 @@ const STEPS = [
 ] as const;
 
 const inputClass =
-  'w-full rounded-none border border-sf-border-strong bg-sf-black px-4 py-3.5 text-base text-white outline-none transition-colors placeholder:text-sf-ink-600 focus:border-sf-red focus:ring-1 focus:ring-sf-red/30';
-const labelClass = 'mb-2 block text-xs font-bold uppercase tracking-wider text-sf-ink-200';
-const cardClass = 'rounded-none border border-sf-border bg-sf-surface p-5 sm:p-8';
+  'field h-12 rounded-none border-white/10 bg-zv-black px-4 text-sm text-zv-white placeholder:text-zv-ink-600';
+const labelClass = 'field-label mb-2 block text-zv-ink-300';
+const cardClass = 'min-w-0 border border-white/10 bg-zv-panel p-4 sm:p-8';
 const buttonClass =
-  'inline-flex min-h-11 items-center justify-center gap-2 rounded-none border px-5 py-3 font-display text-xs font-bold uppercase tracking-wider transition-colors disabled:cursor-not-allowed disabled:opacity-40';
+  'inline-flex min-h-12 items-center justify-center gap-2 rounded-none border px-5 py-3 font-display text-[11px] font-black uppercase tracking-[0.16em] transition-colors disabled:cursor-not-allowed disabled:opacity-40';
 const iconButtonClass =
-  'flex h-10 w-10 shrink-0 items-center justify-center rounded-none border border-sf-border-strong bg-sf-black text-sf-ink-300 transition-colors hover:border-sf-red hover:text-white disabled:cursor-not-allowed disabled:opacity-30';
+  'flex h-11 w-11 shrink-0 items-center justify-center rounded-none border border-white/10 bg-zv-elevated text-zv-ink-300 transition-colors hover:border-zv-orange hover:text-zv-orange disabled:cursor-not-allowed disabled:opacity-30';
 const stepHeadingClass = 'mb-6 flex items-center gap-3';
-const stepEyebrowClass = 'font-display text-xs font-extrabold tracking-[0.2em] text-sf-red';
-const stepTitleClass = 'text-sm font-semibold uppercase tracking-wider text-sf-ink-200';
+const stepEyebrowClass = 'font-display text-xs font-black tracking-[0.28em] text-zv-orange';
+const stepTitleClass = 'font-display text-lg font-black uppercase tracking-tight text-white';
 
 interface FeatureDraft {
   id?: string;
@@ -284,7 +284,7 @@ export const BikeForm: React.FC = () => {
   if (loading) {
     return (
       <div className="py-20">
-        <p className="text-sm text-sf-ink-500">Cargando publicación…</p>
+        <p className="text-sm text-zv-ink-500">Cargando publicación…</p>
       </div>
     );
   }
@@ -293,90 +293,112 @@ export const BikeForm: React.FC = () => {
 
   return (
     <div className="pb-16">
-      <div className="mb-7 border-b border-sf-border pb-6">
+      <header className="mb-8 border-b border-white/10 pb-7">
         <Link
           to="/admin/motos"
-          className="mb-4 inline-flex min-h-11 items-center gap-2 text-xs font-bold uppercase tracking-wider text-sf-ink-400 transition-colors hover:text-sf-red"
+          className="mb-5 inline-flex min-h-11 items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-zv-ink-400 transition-colors hover:text-zv-orange-soft"
         >
           <ArrowLeft size={16} /> Volver al listado
         </Link>
-        <span className="micro-label text-sf-red">
-          {isEdit ? 'Edición' : 'Alta'} / Catálogo
+        <span className="eyebrow">
+          {isEdit ? 'Edición' : 'Alta'} / Catálogo · Panel ZV
         </span>
-        <h1 className="mt-2 font-display text-3xl uppercase tracking-wide text-white sm:text-4xl">
+        <h1 className="mt-5 break-words font-display text-[clamp(1.9rem,5.5vw,4rem)] font-black uppercase leading-[0.88] tracking-[-0.055em] text-white sm:text-[clamp(2.4rem,5.5vw,4rem)]">
           {isEdit ? 'Editar publicación' : 'Nueva publicación'}
+          <span className="text-zv-orange">.</span>
         </h1>
-        <p className="mt-2 text-sm text-sf-ink-400">
+        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-zv-ink-400">
           Completá los pasos en orden. Podés guardar como borrador cuando quieras.
         </p>
-      </div>
+      </header>
 
-        {error && (
-          <div role="alert" className="mb-6 flex items-start gap-3 rounded-none border border-sf-red/40 bg-sf-red/10 px-4 py-3 text-sm text-sf-red-soft">
-            <Info size={18} className="mt-0.5 shrink-0" />
-            {error}
-          </div>
-        )}
+      {error && (
+        <div
+          role="alert"
+          className="mb-6 flex items-start gap-3 border-l-2 border-zv-orange bg-zv-orange/10 px-4 py-3 text-sm text-zv-white"
+        >
+          <Info size={18} className="mt-0.5 shrink-0 text-zv-orange" />
+          {error}
+        </div>
+      )}
 
-        {/* Pasos: se navega hacia adelante solo con los datos válidos. */}
-        <nav aria-label="Pasos de la publicación" className="mb-8 rounded-none border border-sf-border bg-sf-surface p-3 sm:p-4">
-          <p className="mb-3 px-1 text-[10px] font-bold uppercase tracking-widest text-sf-ink-500">
+      {/* Pasos: se navega hacia adelante solo con los datos válidos. */}
+      <nav
+        aria-label="Pasos de la publicación"
+        className="mb-8 border border-white/10 bg-zv-panel p-3 sm:p-4"
+      >
+        <div className="mb-3 flex items-center justify-between gap-3 px-1">
+          <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-zv-ink-500">
             Paso {step} de {STEPS.length}
           </p>
-          <ol className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
-            {STEPS.map((item) => {
-              const active = step === item.id;
-              const done = step > item.id;
-              return (
-                <li key={item.id}>
-                  <button
-                    type="button"
-                    disabled={item.id > step}
-                    aria-current={active ? 'step' : undefined}
-                    onClick={() => setStep(item.id)}
-                    className={cn(
-                      'flex h-full w-full flex-col items-start gap-2 rounded-none border px-3 py-3 text-left transition-colors',
-                      active
-                        ? 'border-sf-red bg-sf-red/10'
-                        : done
-                          ? 'border-sf-border bg-sf-elevated/40 hover:border-sf-red/60'
-                          : 'border-sf-border bg-transparent opacity-60'
-                    )}
-                  >
-                    <span className="flex w-full items-center gap-2">
-                      <span
-                        className={cn(
-                          'flex h-6 w-6 shrink-0 items-center justify-center rounded-none text-[10px] font-bold',
-                          active ? 'bg-sf-red text-white' : done ? 'bg-sf-elevated text-sf-ink-300' : 'bg-sf-surface text-sf-ink-600'
-                        )}
-                      >
-                        {done ? <Check size={12} /> : item.id}
-                      </span>
-                      <span className={cn(
-                        'text-xs font-bold uppercase tracking-wider',
-                        active ? 'text-white' : done ? 'text-sf-ink-300' : 'text-sf-ink-600'
-                      )}>
-                        {item.label}
-                      </span>
+          <span className="h-[2px] w-12 bg-zv-orange" />
+        </div>
+        <ol className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+          {STEPS.map((item) => {
+            const active = step === item.id;
+            const done = step > item.id;
+            return (
+              <li key={item.id}>
+                <button
+                  type="button"
+                  disabled={item.id > step}
+                  aria-current={active ? 'step' : undefined}
+                  onClick={() => setStep(item.id)}
+                  className={cn(
+                    'flex h-full min-h-16 w-full flex-col items-start gap-2 border px-3 py-3 text-left transition-colors',
+                    active
+                      ? 'border-zv-orange bg-zv-orange/10'
+                      : done
+                        ? 'border-white/10 bg-zv-elevated/60 hover:border-zv-orange/60'
+                        : 'border-white/10 bg-transparent opacity-60'
+                  )}
+                >
+                  <span className="flex w-full min-w-0 items-center gap-1.5">
+                    <span
+                      className={cn(
+                        'flex h-7 w-7 shrink-0 items-center justify-center font-display text-[11px] font-black',
+                        active
+                          ? 'bg-zv-orange text-zv-black'
+                          : done
+                            ? 'bg-zv-elevated text-zv-orange-soft'
+                            : 'bg-white/5 text-zv-ink-600'
+                      )}
+                    >
+                      {done ? <Check size={13} /> : item.id}
                     </span>
-                    <span className="text-[11px] leading-tight text-sf-ink-500">{item.hint}</span>
-                  </button>
-                </li>
-              );
-            })}
-          </ol>
-        </nav>
+                    <span
+                      className={cn(
+                        'min-w-0 break-words font-display text-xs font-black uppercase leading-tight tracking-tight',
+                        active
+                          ? 'text-white'
+                          : done
+                            ? 'text-zv-ink-300'
+                            : 'text-zv-ink-600'
+                      )}
+                    >
+                      {item.label}
+                    </span>
+                  </span>
+                  <span className="hidden text-[11px] leading-tight text-zv-ink-500 sm:block">
+                    {item.hint}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ol>
+      </nav>
 
-        <form onSubmit={(event) => { event.preventDefault(); void save('DISPONIBLE'); }}>
+      <form onSubmit={(event) => { event.preventDefault(); void save('DISPONIBLE'); }}>
           {/* Paso 1 — Datos */}
           {step === 1 && (
             <section className={cardClass}>
               <div className={stepHeadingClass}>
                 <span className={stepEyebrowClass}>01</span>
-                <span className="h-px w-8 bg-sf-red" />
+                <span className="h-[2px] w-10 bg-zv-orange" />
                 <h2 className={stepTitleClass}>Datos</h2>
               </div>
-              <p className="-mt-2 mb-6 text-sm text-sf-ink-500">
+              <p className="-mt-2 mb-6 text-sm text-zv-ink-400">
                 Lo básico para identificar la moto en el catálogo.
               </p>
               <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -442,7 +464,7 @@ export const BikeForm: React.FC = () => {
                   <label htmlFor="bike-price" className={labelClass}>Precio</label>
                   <div className="flex gap-2">
                     <div className="relative flex-1">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sf-ink-500">$</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zv-ink-500">$</span>
                       <input
                         id="bike-price"
                         required
@@ -450,14 +472,14 @@ export const BikeForm: React.FC = () => {
                         min="0"
                         value={form.price}
                         onChange={(event) => update('price', event.target.value)}
-                        className={cn(inputClass, 'pl-7')}
+                        className={cn(inputClass, '!pl-7')}
                       />
                     </div>
                     <select
                       aria-label="Moneda"
                       value={form.currency}
                       onChange={(event) => update('currency', event.target.value)}
-                      className={cn(inputClass, 'w-20 px-2')}
+                      className={cn(inputClass, '!w-20 !px-2')}
                     >
                       <option value="ARS">ARS</option>
                       <option value="USD">USD</option>
@@ -473,13 +495,13 @@ export const BikeForm: React.FC = () => {
             <section className={cardClass}>
               <div className={stepHeadingClass}>
                 <span className={stepEyebrowClass}>02</span>
-                <span className="h-px w-8 bg-sf-red" />
+                <span className="h-[2px] w-10 bg-zv-orange" />
                 <h2 className={stepTitleClass}>Estado</h2>
               </div>
-              <p className="-mt-2 mb-6 text-sm text-sf-ink-500">
+              <p className="-mt-2 mb-6 text-sm text-zv-ink-400">
                 Elegí si es 0 km o usada. Esto define qué datos se muestran después.
               </p>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {CONDITIONS.map((condition) => {
                   const selected = form.condition === condition;
                   return (
@@ -489,29 +511,31 @@ export const BikeForm: React.FC = () => {
                       onClick={() => changeCondition(condition)}
                       aria-pressed={selected}
                       className={cn(
-                        'flex min-h-36 flex-col items-start gap-3 rounded-none border p-5 text-left transition-colors',
+                        'flex min-h-40 flex-col items-start gap-3 border p-5 text-left transition-colors',
                         selected
-                          ? 'border-sf-red bg-sf-red/10'
-                          : 'border-sf-border bg-sf-elevated/40 hover:border-sf-border-strong'
+                          ? 'border-zv-orange bg-zv-orange/[0.08]'
+                          : 'border-white/10 bg-zv-black/40 hover:border-white/25'
                       )}
                     >
-                      <span className="flex w-full items-start justify-between">
+                      <span className="flex w-full items-start justify-between gap-3">
                         <span className={cn(
-                          'flex h-10 w-10 items-center justify-center rounded-none',
-                          selected ? 'bg-sf-red text-white' : 'bg-sf-elevated text-sf-ink-400'
+                          'flex h-11 w-11 items-center justify-center border',
+                          selected
+                            ? 'border-zv-orange bg-zv-orange text-zv-black'
+                            : 'border-white/10 bg-zv-elevated text-zv-ink-400'
                         )}>
-                          {condition === 'NUEVA' ? <BikeIcon size={20} /> : <Gauge size={20} />}
+                          {condition === 'NUEVA' ? <BikeIcon size={21} /> : <Gauge size={21} />}
                         </span>
                         {selected && (
-                          <span className="inline-flex items-center gap-1 rounded-none bg-sf-red/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-sf-red-soft">
+                          <span className="tag border border-zv-orange/40 text-zv-orange-soft">
                             <Check size={12} /> Seleccionada
                           </span>
                         )}
                       </span>
-                      <span className="font-display text-xl font-bold text-white">
+                      <span className="font-display text-2xl font-black uppercase tracking-tight text-white">
                         {condition === 'NUEVA' ? '0 km' : 'Usada'}
                       </span>
-                      <span className="max-w-xs text-xs leading-relaxed text-sf-ink-500">
+                      <span className="max-w-xs text-xs leading-relaxed text-zv-ink-400">
                         {condition === 'NUEVA'
                           ? 'Sin kilómetros ni horas de uso declarados.'
                           : 'Podés cargar kilómetros y horas de uso (opcional).'}
@@ -528,10 +552,10 @@ export const BikeForm: React.FC = () => {
             <section className={cardClass}>
               <div className={stepHeadingClass}>
                 <span className={stepEyebrowClass}>03</span>
-                <span className="h-px w-8 bg-sf-red" />
+                <span className="h-[2px] w-10 bg-zv-orange" />
                 <h2 className={stepTitleClass}>Detalles</h2>
               </div>
-              <p className="-mt-2 mb-6 text-sm text-sf-ink-500">
+              <p className="-mt-2 mb-6 text-sm text-zv-ink-400">
                 Sumá información técnica y características. Todo es opcional.
               </p>
 
@@ -549,7 +573,7 @@ export const BikeForm: React.FC = () => {
                       <option key={item.value} value={item.value}>{item.label}</option>
                     ))}
                   </select>
-                  <p className="text-[11px] leading-relaxed text-sf-ink-500">
+                  <p className="text-[11px] leading-relaxed text-zv-ink-500">
                     Define en qué bloque del catálogo aparece: Enduro/Cross o Ruta.
                   </p>
                 </div>
@@ -580,7 +604,7 @@ export const BikeForm: React.FC = () => {
                       onChange={(event) => update('usageHours', event.target.value)}
                       className={inputClass}
                     />
-                    <p className="flex items-start gap-1.5 text-[11px] leading-relaxed text-sf-ink-500">
+                    <p className="flex items-start gap-1.5 text-[11px] leading-relaxed text-zv-ink-500">
                       <CircleHelp size={13} className="mt-0.5 shrink-0" />
                       Opcional y decimal. Solo se muestra en la ficha si es mayor a 0.
                     </p>
@@ -595,7 +619,7 @@ export const BikeForm: React.FC = () => {
                   rows={4}
                   value={form.description}
                   onChange={(event) => update('description', event.target.value)}
-                  className={cn(inputClass, 'resize-y')}
+                  className={cn(inputClass, 'h-auto min-h-28 resize-y py-3')}
                 />
               </div>
 
@@ -603,7 +627,7 @@ export const BikeForm: React.FC = () => {
                 <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                   <div>
                     <p className={labelClass}>Características técnicas</p>
-                    <p className="text-[11px] text-sf-ink-500">
+                    <p className="text-[11px] text-zv-ink-500">
                       Pares clave / valor. Ejemplo: Motor · 300 cc.
                     </p>
                   </div>
@@ -611,14 +635,14 @@ export const BikeForm: React.FC = () => {
                     type="button"
                     disabled={features.length >= 30}
                     onClick={() => setFeatures((prev) => [...prev, { key: '', value: '' }])}
-                    className={cn(buttonClass, 'w-full border-sf-border text-sf-ink-300 hover:border-sf-red hover:text-white sm:w-auto')}
+                    className={cn(buttonClass, 'w-full border-white/15 bg-zv-elevated/60 text-zv-ink-300 hover:border-zv-orange hover:text-white sm:w-auto')}
                   >
                     <Plus size={16} /> Agregar característica
                   </button>
                 </div>
                 <div className="space-y-3">
                   {features.length === 0 && (
-                    <p className="rounded-none border border-dashed border-sf-border px-4 py-6 text-center text-xs text-sf-ink-600">
+                    <p className="border border-dashed border-white/15 px-4 py-6 text-center text-xs text-zv-ink-600">
                       Sin características cargadas.
                     </p>
                   )}
@@ -644,7 +668,7 @@ export const BikeForm: React.FC = () => {
                         type="button"
                         aria-label={`Eliminar característica ${index + 1}`}
                         onClick={() => setFeatures((prev) => prev.filter((_, i) => i !== index))}
-                        className={cn(iconButtonClass, 'h-11 w-11 sm:h-[52px] sm:w-[52px] hover:border-sf-red hover:text-sf-red')}
+                        className={cn(iconButtonClass, 'h-11 w-11 sm:h-[52px] sm:w-[52px] hover:border-zv-orange hover:text-zv-orange')}
                       >
                         <Trash2 size={16} />
                       </button>
@@ -660,13 +684,13 @@ export const BikeForm: React.FC = () => {
             <section className={cardClass}>
               <div className={stepHeadingClass}>
                 <span className={stepEyebrowClass}>04</span>
-                <span className="h-px w-8 bg-sf-red" />
+                <span className="h-[2px] w-10 bg-zv-orange" />
                 <h2 className={stepTitleClass}>Fotografías</h2>
               </div>
-              <p className="-mt-2 mb-4 text-sm text-sf-ink-500">
+              <p className="-mt-2 mb-4 text-sm text-zv-ink-500">
                 Subí imágenes, elegí la portada y ordenálas. Se guardan al guardar la publicación.
               </p>
-              <div className="mb-6 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-sf-ink-500">
+              <div className="mb-6 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-zv-ink-500">
                 <span>↑ ↓ = ordenar</span>
                 <span>✓ = usar como portada</span>
                 <span>✕ = quitar</span>
@@ -674,25 +698,25 @@ export const BikeForm: React.FC = () => {
 
               {existingImages.length > 0 && (
                 <div className="mb-8">
-                  <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-sf-ink-500">Fotos de la publicación</p>
+                  <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-zv-ink-500">Fotos de la publicación</p>
                   <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                     {existingImages.map((image, index) => (
-                      <div key={image.id} className="overflow-hidden rounded-none border border-sf-border bg-black">
+                      <div key={image.id} className="overflow-hidden border border-white/10 bg-zv-black">
                         <div className="relative aspect-square">
                           <img src={getThumbnailUrl(image.url)} alt="" className="h-full w-full object-cover" />
                           {image.isPrimary && (
-                            <span className="absolute left-2 top-2 rounded-none border border-sf-red/60 bg-black/75 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-sf-red-soft backdrop-blur">
+                            <span className="absolute left-2 top-2 border border-zv-orange/60 bg-zv-black/80 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-zv-orange-soft backdrop-blur">
                               Portada
                             </span>
                           )}
                         </div>
-                        <div className="flex items-center justify-center gap-1.5 border-t border-sf-border bg-sf-elevated/60 p-2">
+                        <div className="grid grid-cols-4 gap-1 border-t border-white/10 bg-zv-elevated/60 p-1.5 sm:flex sm:items-center sm:justify-center sm:gap-1.5 sm:p-2">
                           <button
                             type="button"
                             aria-label={`Mover foto ${index + 1} hacia arriba`}
                             disabled={index === 0}
                             onClick={() => void moveExisting(index, -1)}
-                            className={cn(iconButtonClass, 'h-8 w-8 sm:h-10 sm:w-10')}
+                            className={cn(iconButtonClass, 'h-11 w-full sm:w-11')}
                           >
                             <ArrowUp size={14} />
                           </button>
@@ -701,7 +725,7 @@ export const BikeForm: React.FC = () => {
                             aria-label={`Mover foto ${index + 1} hacia abajo`}
                             disabled={index === existingImages.length - 1}
                             onClick={() => void moveExisting(index, 1)}
-                            className={cn(iconButtonClass, 'h-8 w-8 sm:h-10 sm:w-10')}
+                            className={cn(iconButtonClass, 'h-11 w-full sm:w-11')}
                           >
                             <ArrowDown size={14} />
                           </button>
@@ -711,7 +735,7 @@ export const BikeForm: React.FC = () => {
                               title="Usar como portada"
                               aria-label={`Usar foto ${index + 1} como portada`}
                               onClick={() => void makePrimary(image.id)}
-                              className={cn(iconButtonClass, 'h-8 w-8 sm:h-10 sm:w-10')}
+                              className={cn(iconButtonClass, 'h-11 w-full sm:w-11')}
                             >
                               <Check size={14} />
                             </button>
@@ -721,7 +745,7 @@ export const BikeForm: React.FC = () => {
                             title="Eliminar fotografía"
                             aria-label={`Eliminar foto ${index + 1}`}
                             onClick={() => void deleteExisting(image.id)}
-                            className={cn(iconButtonClass, 'h-8 w-8 hover:border-sf-red hover:text-sf-red sm:h-10 sm:w-10')}
+                            className={cn(iconButtonClass, 'h-11 w-full hover:border-zv-orange hover:text-zv-orange sm:w-11')}
                           >
                             <Trash2 size={14} />
                           </button>
@@ -734,21 +758,21 @@ export const BikeForm: React.FC = () => {
 
               {newImages.length > 0 && (
                 <div className="mb-8">
-                  <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-sf-ink-500">Fotos nuevas (se suben al guardar)</p>
+                  <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-zv-ink-500">Fotos nuevas (se suben al guardar)</p>
                   <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                     {newImages.map((file, index) => (
-                      <div key={`${file.name}-${index}`} className="flex min-h-40 flex-col items-center justify-between gap-3 rounded-none border border-dashed border-sf-border-strong bg-sf-elevated/40 p-3">
+                      <div key={`${file.name}-${index}`} className="flex min-h-40 flex-col items-center justify-between gap-3 border border-dashed border-white/20 bg-zv-black/40 p-3">
                         <div className="flex w-full flex-col items-center gap-2 pt-2">
-                          <ImageIcon size={24} className="text-sf-ink-500" />
-                          <span className="w-full truncate text-center text-[10px] text-sf-ink-400">{file.name}</span>
+                          <ImageIcon size={24} className="text-zv-ink-500" />
+                          <span className="w-full truncate text-center text-[10px] text-zv-ink-400">{file.name}</span>
                         </div>
-                        <div className="flex items-center justify-center gap-1.5">
+                        <div className="grid w-full grid-cols-3 gap-1 sm:flex sm:items-center sm:justify-center sm:gap-1.5">
                           <button
                             type="button"
                             aria-label={`Mover foto nueva ${index + 1} antes`}
                             disabled={index === 0}
                             onClick={() => moveNew(index, -1)}
-                            className={cn(iconButtonClass, 'h-8 w-8 sm:h-10 sm:w-10')}
+                            className={cn(iconButtonClass, 'h-11 w-full sm:w-11')}
                           >
                             <ArrowUp size={14} />
                           </button>
@@ -757,7 +781,7 @@ export const BikeForm: React.FC = () => {
                             aria-label={`Mover foto nueva ${index + 1} después`}
                             disabled={index === newImages.length - 1}
                             onClick={() => moveNew(index, 1)}
-                            className={cn(iconButtonClass, 'h-8 w-8 sm:h-10 sm:w-10')}
+                            className={cn(iconButtonClass, 'h-11 w-full sm:w-11')}
                           >
                             <ArrowDown size={14} />
                           </button>
@@ -765,7 +789,7 @@ export const BikeForm: React.FC = () => {
                             type="button"
                             aria-label={`Quitar foto nueva ${index + 1}`}
                             onClick={() => setNewImages((prev) => prev.filter((_, i) => i !== index))}
-                            className={cn(iconButtonClass, 'h-8 w-8 hover:border-sf-red hover:text-sf-red sm:h-10 sm:w-10')}
+                            className={cn(iconButtonClass, 'h-11 w-full hover:border-zv-orange hover:text-zv-orange sm:w-11')}
                           >
                             <Trash2 size={14} />
                           </button>
@@ -776,12 +800,14 @@ export const BikeForm: React.FC = () => {
                 </div>
               )}
 
-              <label className="flex min-h-44 cursor-pointer flex-col items-center justify-center gap-2 rounded-none border border-dashed border-sf-border-strong bg-sf-elevated/30 p-8 text-center transition-colors hover:border-sf-red hover:bg-sf-red/5">
-                <span className="flex h-12 w-12 items-center justify-center rounded-none bg-sf-red/10">
-                  <Upload size={24} className="text-sf-red" />
+              <label className="flex min-h-44 cursor-pointer flex-col items-center justify-center gap-2 border border-dashed border-white/20 bg-zv-black/40 p-8 text-center transition-colors hover:border-zv-orange hover:bg-zv-orange/5">
+                <span className="flex h-12 w-12 items-center justify-center bg-zv-orange/10">
+                  <Upload size={24} className="text-zv-orange" />
                 </span>
-                <span className="text-sm font-semibold text-white">Tocá para agregar fotografías</span>
-                <span className="text-[11px] text-sf-ink-500">JPG, PNG o WebP · hasta {MAX_IMAGES_PER_BIKE} fotos por publicación</span>
+                <span className="font-display text-sm font-black uppercase tracking-wide text-white">
+                  Tocá para agregar fotografías
+                </span>
+                <span className="text-[11px] text-zv-ink-500">JPG, PNG o WebP · hasta {MAX_IMAGES_PER_BIKE} fotos por publicación</span>
                 <input
                   type="file"
                   multiple
@@ -791,7 +817,7 @@ export const BikeForm: React.FC = () => {
                 />
               </label>
               {imageCount > 0 && (
-                <p className="mt-4 text-xs text-sf-ink-500">{imageCount} fotografía(s) en total.</p>
+                <p className="mt-4 text-xs text-zv-ink-500">{imageCount} fotografía(s) en total.</p>
               )}
             </section>
           )}
@@ -801,37 +827,37 @@ export const BikeForm: React.FC = () => {
             <section className={cardClass}>
               <div className={stepHeadingClass}>
                 <span className={stepEyebrowClass}>05</span>
-                <span className="h-px w-8 bg-sf-red" />
+                <span className="h-[2px] w-10 bg-zv-orange" />
                 <h2 className={stepTitleClass}>Publicación</h2>
               </div>
-              <p className="-mt-2 mb-6 text-sm text-sf-ink-500">
+              <p className="-mt-2 mb-6 text-sm text-zv-ink-400">
                 Revisá el resumen y elegí cómo guardar.
               </p>
 
               <div className="grid gap-3 sm:grid-cols-3 sm:gap-4">
-                <div className="rounded-none border border-sf-border bg-sf-elevated/40 p-4">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-sf-ink-500">La moto</p>
+                <div className="border border-white/10 bg-zv-black/50 p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-zv-ink-500">La moto</p>
                   <p className="mt-2 truncate text-sm font-semibold text-white">{form.title || 'Sin título'}</p>
-                  <p className="mt-1 text-xs text-sf-ink-500">{form.year} · {form.currency} {form.price || '—'}</p>
-                  <p className="mt-1 text-xs text-sf-ink-500">Uso: {usageLabel(form.usage || null)}</p>
+                  <p className="mt-1 text-xs text-zv-ink-500">{form.year} · {form.currency} {form.price || '—'}</p>
+                  <p className="mt-1 text-xs text-zv-ink-500">Uso: {usageLabel(form.usage || null)}</p>
                 </div>
-                <div className="rounded-none border border-sf-border bg-sf-elevated/40 p-4">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-sf-ink-500">Estado</p>
+                <div className="border border-white/10 bg-zv-black/50 p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-zv-ink-500">Estado</p>
                   <p className="mt-2 text-sm font-semibold text-white">
                     {form.condition === 'NUEVA' ? '0 km' : 'Usada'}
                   </p>
-                  <p className="mt-1 text-xs text-sf-ink-500">
+                  <p className="mt-1 text-xs text-zv-ink-500">
                     {form.usageHours && form.condition === 'USADA'
                       ? `${form.usageHours} horas de uso`
                       : 'Horas de uso: sin dato'}
                   </p>
                 </div>
-                <div className="rounded-none border border-sf-border bg-sf-elevated/40 p-4">
-                  <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-sf-ink-500">
+                <div className="border border-white/10 bg-zv-black/50 p-4">
+                  <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-zv-ink-500">
                     <FileText size={12} /> Contenido
                   </p>
                   <p className="mt-2 text-sm font-semibold text-white">{imageCount} foto(s)</p>
-                  <p className="mt-1 text-xs text-sf-ink-500">{features.filter((f) => f.key && f.value).length} característica(s)</p>
+                  <p className="mt-1 text-xs text-zv-ink-500">{features.filter((f) => f.key && f.value).length} característica(s)</p>
                 </div>
               </div>
 
@@ -840,44 +866,44 @@ export const BikeForm: React.FC = () => {
                   type="checkbox"
                   checked={form.featured}
                   onChange={(event) => update('featured', event.target.checked)}
-                  className="h-5 w-5 rounded border-sf-border-strong bg-transparent text-sf-red focus:ring-sf-red"
+                  className="h-5 w-5 rounded-none border-white/25 bg-zv-black text-zv-orange focus:ring-zv-orange"
                 />
-                <span className="text-sm font-medium text-sf-ink-200">Destacar en la portada</span>
+                <span className="text-sm font-medium text-zv-ink-300">Destacar en la portada</span>
               </label>
 
-              <p className="mb-3 mt-8 text-[10px] font-bold uppercase tracking-widest text-sf-ink-500">
+              <p className="mb-3 mt-8 text-[10px] font-bold uppercase tracking-widest text-zv-ink-500">
                 Elegí qué hacer con esta publicación
               </p>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                <div className="rounded-none border border-sf-border-strong bg-sf-elevated/40 p-4">
+                <div className="border border-white/15 bg-zv-black/40 p-4">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-none bg-sf-elevated text-sf-ink-300">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-none bg-zv-elevated text-zv-ink-300">
                       <EyeOff size={18} />
                     </span>
-                    <span className="rounded-none border border-sf-border-strong px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-sf-ink-400">
+                    <span className="border border-white/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zv-ink-400">
                       Privado
                     </span>
                   </div>
                   <p className="mt-3 text-sm font-semibold text-white">Guardar como borrador</p>
-                  <p className="mt-1 text-xs leading-relaxed text-sf-ink-500">
+                  <p className="mt-1 text-xs leading-relaxed text-zv-ink-500">
                     Queda guardado y solo se ve desde este panel. Podés seguir editando después.
                   </p>
                 </div>
-                <div className="rounded-none border border-sf-red/30 bg-sf-red/[0.06] p-4">
+                <div className="border border-zv-orange/40 bg-zv-orange/[0.08] p-4">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-none bg-sf-red/15 text-sf-red-soft">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-none bg-zv-orange/15 text-zv-orange-soft">
                       <Sparkles size={18} />
                     </span>
-                    <span className="rounded-none border border-sf-red/40 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-sf-red-soft">
+                    <span className="rounded-none border border-zv-orange/40 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zv-orange-soft">
                       Visible
                     </span>
                   </div>
                   <p className="mt-3 text-sm font-semibold text-white">Publicar</p>
-                  <p className="mt-1 text-xs leading-relaxed text-sf-ink-400">
+                  <p className="mt-1 text-xs leading-relaxed text-zv-ink-400">
                     La moto pasa a estar disponible en el catálogo público.
                   </p>
                 </div>
-                <div className="rounded-none border border-amber-500/30 bg-amber-500/[0.06] p-4">
+                <div className="border border-amber-500/30 bg-amber-500/[0.07] p-4">
                   <div className="flex items-center justify-between gap-2">
                     <span className="flex h-9 w-9 items-center justify-center rounded-none bg-amber-500/15 text-amber-300">
                       <Info size={18} />
@@ -887,21 +913,21 @@ export const BikeForm: React.FC = () => {
                     </span>
                   </div>
                   <p className="mt-3 text-sm font-semibold text-white">Marcar como reservada</p>
-                  <p className="mt-1 text-xs leading-relaxed text-sf-ink-400">
+                  <p className="mt-1 text-xs leading-relaxed text-zv-ink-400">
                     Sigue en el catálogo con la leyenda “Reservada”.
                   </p>
                 </div>
-                <div className="rounded-none border border-sf-border-strong bg-sf-elevated/40 p-4">
+                <div className="border border-white/15 bg-zv-black/40 p-4">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-none bg-sf-elevated text-sf-ink-400">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-none bg-zv-elevated text-zv-ink-400">
                       <Check size={18} />
                     </span>
-                    <span className="rounded-none border border-sf-border-strong px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-sf-ink-400">
+                    <span className="border border-white/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zv-ink-400">
                       Visible
                     </span>
                   </div>
                   <p className="mt-3 text-sm font-semibold text-white">Marcar como vendida</p>
-                  <p className="mt-1 text-xs leading-relaxed text-sf-ink-500">
+                  <p className="mt-1 text-xs leading-relaxed text-zv-ink-500">
                     Sigue en el catálogo con la leyenda “Vendida”.
                   </p>
                 </div>
@@ -909,82 +935,85 @@ export const BikeForm: React.FC = () => {
             </section>
           )}
 
-          {/* Navegación entre pasos y acciones finales */}
-          <div className="mt-8 flex flex-col-reverse gap-3 border-t border-sf-border pt-6 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              {step > 1 && (
-                <button
-                  type="button"
-                  onClick={() => setStep((current) => current - 1)}
-                  className={cn(buttonClass, 'w-full border-sf-border text-sf-ink-300 hover:bg-sf-elevated sm:w-auto')}
-                >
-                  <ArrowLeft size={16} /> Anterior
-                </button>
+      {/* Navegación entre pasos y acciones finales */}
+      <div className="mt-8 flex flex-col-reverse gap-3 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          {step > 1 && (
+            <button
+              type="button"
+              onClick={() => setStep((current) => current - 1)}
+              className={cn(
+                buttonClass,
+                'w-full border-white/15 bg-zv-elevated/60 text-zv-ink-300 hover:border-zv-orange hover:text-white sm:w-auto'
               )}
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              {step < 5 && (
-                <button
-                  type="button"
-                  disabled={!validSteps[step]}
-                  onClick={() => setStep((current) => current + 1)}
-                  className={cn(
-                    buttonClass,
-                    'w-full border-sf-red bg-sf-red text-white hover:bg-sf-red-dark disabled:border-sf-border disabled:bg-sf-elevated disabled:text-sf-ink-600 sm:w-auto'
-                  )}
-                >
-                  Siguiente <ArrowRight size={16} />
-                </button>
+            >
+              <ArrowLeft size={16} /> Anterior
+            </button>
+          )}
+        </div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          {step < 5 && (
+            <button
+              type="button"
+              disabled={!validSteps[step]}
+              onClick={() => setStep((current) => current + 1)}
+              className={cn(
+                buttonClass,
+                'w-full border-zv-orange bg-zv-orange text-zv-black hover:bg-zv-orange-soft disabled:border-white/10 disabled:bg-zv-elevated disabled:text-zv-ink-600 sm:w-auto'
               )}
-              {step === 5 && (
-                <>
-                  <button
-                    type="button"
-                    disabled={saving}
-                    onClick={() => void save('BORRADOR')}
-                    className={cn(
-                      buttonClass,
-                      'w-full border-sf-border-strong bg-transparent text-sf-ink-300 hover:border-sf-ink-400 hover:bg-sf-elevated hover:text-white sm:w-auto'
-                    )}
-                  >
-                    <Save size={16} /> {saving ? 'Guardando...' : 'Guardar como borrador'}
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={saving}
-                    className={cn(
-                      buttonClass,
-                      'w-full border-sf-red bg-sf-red text-white hover:bg-sf-red-dark sm:w-auto'
-                    )}
-                  >
-                    <Send size={16} /> {saving ? 'Publicando...' : 'Publicar'}
-                  </button>
-                  <button
-                    type="button"
-                    disabled={saving}
-                    onClick={() => void save('RESERVADA')}
-                    className={cn(
-                      buttonClass,
-                      'w-full border-amber-500/60 bg-transparent text-amber-300 hover:bg-amber-500/10 sm:w-auto'
-                    )}
-                  >
-                    <Info size={16} /> {saving ? 'Guardando...' : 'Reservada'}
-                  </button>
-                  <button
-                    type="button"
-                    disabled={saving}
-                    onClick={() => void save('VENDIDA')}
-                    className={cn(
-                      buttonClass,
-                      'w-full border-sf-border-strong bg-transparent text-sf-ink-300 hover:border-sf-ink-400 hover:text-white sm:w-auto'
-                    )}
-                  >
-                    <Check size={16} /> {saving ? 'Guardando...' : 'Vendida'}
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
+            >
+              Siguiente <ArrowRight size={16} />
+            </button>
+          )}
+          {step === 5 && (
+            <>
+              <button
+                type="button"
+                disabled={saving}
+                onClick={() => void save('BORRADOR')}
+                className={cn(
+                  buttonClass,
+                  'w-full border-white/15 bg-transparent text-zv-ink-300 hover:border-zv-orange hover:text-white sm:w-auto'
+                )}
+              >
+                <Save size={16} /> {saving ? 'Guardando...' : 'Guardar como borrador'}
+              </button>
+              <button
+                type="submit"
+                disabled={saving}
+                className={cn(
+                  buttonClass,
+                  'w-full border-zv-orange bg-zv-orange text-zv-black hover:bg-zv-orange-soft sm:w-auto'
+                )}
+              >
+                <Send size={16} /> {saving ? 'Publicando...' : 'Publicar'}
+              </button>
+              <button
+                type="button"
+                disabled={saving}
+                onClick={() => void save('RESERVADA')}
+                className={cn(
+                  buttonClass,
+                  'w-full border-amber-500/60 bg-transparent text-amber-300 hover:bg-amber-500/10 sm:w-auto'
+                )}
+              >
+                <Info size={16} /> {saving ? 'Guardando...' : 'Reservada'}
+              </button>
+              <button
+                type="button"
+                disabled={saving}
+                onClick={() => void save('VENDIDA')}
+                className={cn(
+                  buttonClass,
+                  'w-full border-white/15 bg-transparent text-zv-ink-300 hover:border-white/40 hover:text-white sm:w-auto'
+                )}
+              >
+                <Check size={16} /> {saving ? 'Guardando...' : 'Vendida'}
+              </button>
+            </>
+          )}
+        </div>
+      </div>
       </form>
     </div>
   );

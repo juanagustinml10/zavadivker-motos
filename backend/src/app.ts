@@ -59,9 +59,9 @@ app.use(cookieParser());
 app.get('/health', async (_req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
-    res.json({ ok: true, service: 'sfmotos-backend', db: 'ok' });
+    res.json({ ok: true, service: 'zavadivkermotos-backend', db: 'ok' });
   } catch {
-    res.status(503).json({ ok: false, service: 'sfmotos-backend', db: 'unavailable' });
+    res.status(503).json({ ok: false, service: 'zavadivkermotos-backend', db: 'unavailable' });
   }
 });
 

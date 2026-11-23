@@ -5,7 +5,7 @@ import app from './app.js';
 if (process.env.VERCEL !== '1') {
   const port = Number(env.PORT);
   app.listen(port, () => {
-    console.log(`SF MOTOS backend escuchando en http://localhost:${port}`);
+    console.log(`ZAVADIVKER MOTOS backend escuchando en http://localhost:${port}`);
   });
 }
 

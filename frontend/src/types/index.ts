@@ -1,5 +1,5 @@
 /**
- * Tipos del dominio de SF MOTOS.
+ * Tipos del dominio de ZAVADIVKER MOTOS.
  * Estos tipos reflejan el contrato de la API del backend.
  */
 

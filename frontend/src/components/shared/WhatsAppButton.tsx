@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Phone } from 'lucide-react';
+import { MessageCircle } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface WhatsAppButtonProps {
   phone: string;
@@ -22,9 +23,9 @@ export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className={className}
+      className={cn('btn btn-orange px-6', className)}
     >
-      <Phone size={18} />
+      <MessageCircle size={17} />
       <span>{label}</span>
     </a>
   );

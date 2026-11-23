@@ -2,12 +2,13 @@ import axios from 'axios';
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { ApiResponseError } from '@/lib/api-response';
 
-// En producción VITE_API_BASE_URL apunta al dominio del backend. El default
-// relativo /api evita dejar un localhost hardcodeado en el bundle.
+// ZAVADIVKER MOTOS es una instalación independiente: nunca apuntar al backend
+// de la instalación anterior. En desarrollo Vite hace proxy de /api hacia localhost:4000; en
+// producción hay que definir VITE_API_BASE_URL con el backend propio (o servir
+// frontend y API bajo el mismo dominio con rewrites).
 // ⚠️ No apuntar al dominio de Cloudflare Pages: el catch-all `/* /index.html`
 // respondería con HTML para /api/* y parecería que la API "responde".
-const productionApiBase = 'https://sf-motos-livid.vercel.app';
-const configuredBase = (import.meta.env.VITE_API_BASE_URL ?? (import.meta.env.PROD ? productionApiBase : '/api')).replace(/\/+$/, '');
+const configuredBase = (import.meta.env.VITE_API_BASE_URL ?? '/api').replace(/\/+$/, '');
 const API_BASE_URL = configuredBase.endsWith('/api') ? configuredBase : `${configuredBase}/api`;
 
 export const api = axios.create({

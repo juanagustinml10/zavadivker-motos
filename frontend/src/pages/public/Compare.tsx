@@ -49,19 +49,19 @@ export const Compare: React.FC = () => {
     const detalle = bikes
       .map((bike) => `${bike.title} (${bike.year}) — ${formatPrice(bike.price, bike.currency)}`)
       .join('\n');
-    return buildWhatsAppLink(`Hola SF MOTOS! Me interesan estas motos:\n${detalle}`);
+    return buildWhatsAppLink(`Hola ZAVADIVKER MOTOS! Me interesan estas motos:\n${detalle}`);
   }, [bikes]);
 
   if (bikes.length === 0) {
     return (
-      <div className="container-sf flex min-h-[75vh] items-center py-12 sm:py-16">
+      <div className="container-zv flex min-h-[75vh] items-center py-12 sm:py-16">
         <EmptyState
           icon={<Scale size={30} />}
           code="00"
-          title={<>Comparador <span className="text-sf-red">vacío</span></>}
+          title={<>Comparador <span className="text-zv-orange">vacío</span></>}
           description="Agregá hasta dos motos desde el catálogo y compará año, cilindrada, kilometraje y precio lado a lado."
           actions={
-            <Link to="/motos" className="btn btn-red px-7 py-4 text-xs">
+            <Link to="/motos" className="btn btn-orange px-7 py-4 text-xs">
               Ir al catálogo <ChevronRight size={16} />
             </Link>
           }
@@ -72,12 +72,12 @@ export const Compare: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-sf-black pb-16 text-sf-white">
-      {/* 01 / Encabezado */}
+    <div className="min-h-dvh bg-zv-black pb-[calc(5rem+env(safe-area-inset-bottom))] text-zv-white sm:pb-20">
+      {/* Encabezado */}
       <PageIntro
         index="01"
         eyebrow="Decisión informada"
-        title={<>Comparador</>}
+        title={<>Comparador<span className="text-zv-orange">.</span></>}
         outline="VS"
         description={
           <p>
@@ -92,27 +92,26 @@ export const Compare: React.FC = () => {
         }
       />
 
-      {/* 02 / Tabla comparativa */}
-      <section className="container-sf py-12 sm:py-16">
-        <div className="mb-5 flex items-center gap-3">
-          <span className="font-display text-xs font-extrabold tracking-[0.2em] text-sf-red">02</span>
-          <span className="h-px w-10 bg-sf-red" />
-          <span className="font-display text-[10px] font-bold uppercase tracking-[0.35em] text-gray-500">Ficha comparativa</span>
+      {/* Tabla comparativa */}
+      <section className="container-zv py-12 sm:py-16">
+        <div className="mb-6 flex items-center gap-4">
+          <span className="race-rule" aria-hidden="true" />
+          <span className="micro-label text-zv-orange-soft">Ficha comparativa</span>
         </div>
 
-        <div className="panel relative overflow-x-auto">
-          <div className="absolute inset-x-0 top-0 h-[3px] bg-sf-red" aria-hidden="true" />
+        <div className="relative hidden overflow-x-auto border-y border-zv-line bg-zv-panel sm:block">
+          <span className="pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-zv-orange" aria-hidden="true" />
           <table className="w-full min-w-[640px] border-collapse text-left">
             <thead>
-              <tr className="border-b border-white/10">
-                <th scope="col" className="sticky left-0 z-10 bg-sf-surface px-5 py-4 text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">
+              <tr className="border-b border-zv-line">
+                <th scope="col" className="sticky left-0 z-10 bg-zv-panel px-5 py-4 text-[10px] font-bold uppercase tracking-[0.25em] text-zv-ink-500">
                   Característica
                 </th>
                 {bikes.map((bike) => (
                   <th key={bike.id} scope="col" className="min-w-[220px] px-5 py-4">
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex min-w-0 items-center gap-3">
-                        <div className="h-14 w-20 shrink-0 overflow-hidden border border-white/10 bg-black">
+                        <div className="h-14 w-20 shrink-0 overflow-hidden border border-zv-line bg-black">
                           {bike.images?.[0] ? (
                             <img src={getThumbnailUrl(bike.images[0].url)} alt="" className="h-full w-full object-cover" loading="lazy" />
                           ) : (
@@ -121,13 +120,13 @@ export const Compare: React.FC = () => {
                         </div>
                         <div className="min-w-0">
                           <p className="truncate font-display text-base font-bold uppercase leading-tight text-white">{bike.title}</p>
-                          <p className="text-[10px] font-semibold uppercase tracking-wider text-sf-red-soft">{bike.brand?.name ?? ''}</p>
+                          <p className="text-[10px] font-semibold uppercase tracking-wider text-zv-orange-soft">{bike.brand?.name ?? ''}</p>
                         </div>
                       </div>
                       <button
                         type="button"
                         onClick={() => remove(bike.id)}
-                        className="flex h-8 w-8 shrink-0 items-center justify-center border border-white/10 text-gray-400 transition-colors hover:border-sf-red hover:bg-sf-red/10 hover:text-white"
+                        className="flex h-11 w-11 shrink-0 items-center justify-center border border-white/10 text-zv-ink-400 transition-colors hover:border-zv-orange hover:bg-zv-orange/10 hover:text-white"
                         aria-label={`Quitar ${bike.title} del comparador`}
                       >
                         <X size={15} />
@@ -142,13 +141,13 @@ export const Compare: React.FC = () => {
                 const values = bikes.map((bike) => renderValue(bike, attr.key));
                 const allEqual = values.every((value) => value === values[0]);
                 return (
-                  <tr key={attr.label} className={cn('border-b border-white/5 last:border-0', index % 2 === 1 && 'bg-white/[0.02]')}>
-                    <th scope="row" className="sticky left-0 z-10 bg-sf-surface px-5 py-4 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500">
+                  <tr key={attr.label} className={cn('border-b border-zv-line last:border-0', index % 2 === 1 && 'bg-white/[0.02]')}>
+                    <th scope="row" className="sticky left-0 z-10 bg-zv-panel px-5 py-4 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-zv-ink-500">
                       {attr.label}
                     </th>
                     {values.map((value, valueIndex) => (
                       <td key={valueIndex} className="px-5 py-4">
-                        <span className={cn('font-display text-base font-bold uppercase leading-tight text-white', allEqual && 'text-gray-400')}>
+                        <span className={cn('font-display text-base font-bold uppercase leading-tight text-white', allEqual && 'text-zv-ink-500')}>
                           {value}
                         </span>
                       </td>
@@ -159,15 +158,39 @@ export const Compare: React.FC = () => {
             </tbody>
           </table>
         </div>
-        <p className="mt-2 text-[10px] uppercase tracking-[0.2em] text-gray-600">Deslizá horizontalmente para ver todas las columnas en pantallas chicas.</p>
+        {/* En mobile la tabla se reemplaza por tarjetas: sin scroll horizontal. */}
+        <div className="border-y border-zv-line bg-zv-panel sm:hidden">
+          {ATTRS.map((attr) => {
+            const values = bikes.map((bike) => renderValue(bike, attr.key));
+            const allEqual = values.every((value) => value === values[0]);
+            return (
+              <div key={attr.label} className="border-b border-zv-line px-5 py-4 last:border-0">
+                <p className="micro-label text-zv-ink-500">{attr.label}</p>
+                <div className="mt-2 grid grid-cols-2 gap-3">
+                  {values.map((value, index) => (
+                    <div key={index} className="min-w-0 border-l-2 border-zv-orange/60 pl-3">
+                      <p className="text-[9px] font-bold uppercase tracking-widest text-zv-ink-500">
+                        {bikes[index].brand?.name ?? `Moto ${index + 1}`}
+                      </p>
+                      <p className={`mt-1 break-words font-display text-sm font-bold uppercase leading-tight ${allEqual ? 'text-zv-ink-400' : 'text-white'}`}>
+                        {value}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <p className="mt-2 hidden text-[10px] uppercase tracking-[0.2em] text-zv-ink-600 sm:block">Deslizá horizontalmente para ver todas las columnas en pantallas chicas.</p>
 
-        {/* Tarjetas grandes */}
-        <div className="mt-10 grid gap-5 sm:grid-cols-2">
+        {/* Unidades comparadas */}
+        <div className="mt-12 grid gap-5 sm:grid-cols-2">
           {bikes.map((bike) => (
-            <article key={bike.id} className="panel group overflow-hidden">
-              <div className="relative aspect-[16/10] bg-black">
+            <article key={bike.id} className="group relative flex flex-col border border-zv-line bg-zv-surface transition-colors hover:border-zv-orange/60 sm:flex-row">
+              <div className="relative aspect-[16/10] shrink-0 overflow-hidden bg-black sm:aspect-auto sm:w-[42%]">
                 {bike.images?.[0] ? (
-                  <img src={getThumbnailUrl(bike.images[0].url)} alt={bike.title} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" loading="lazy" />
+                  <img src={getThumbnailUrl(bike.images[0].url)} alt={bike.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" loading="lazy" />
                 ) : (
                   <ImagePlaceholder width={640} height={400} label="Foto no disponible" className="h-full w-full" />
                 )}
@@ -175,11 +198,11 @@ export const Compare: React.FC = () => {
                   <ConditionTag condition={bike.condition} overlay />
                 </div>
               </div>
-              <div className="border-t border-white/8 p-5">
-                <p className="font-display text-[10px] font-semibold uppercase tracking-[0.25em] text-sf-red-soft">{bike.brand?.name}</p>
-                <h3 className="mt-1 font-display text-2xl font-bold uppercase leading-tight text-white">{bike.title}</h3>
-                <p className="mt-2 font-display text-xl font-extrabold text-white">{formatPrice(bike.price, bike.currency)}</p>
-                <Link to={`/motos/${bike.slug}`} className="mt-4 inline-flex items-center gap-1.5 border-b border-white/20 pb-1 font-display text-xs font-bold uppercase tracking-[0.2em] text-gray-300 transition-colors hover:border-sf-red hover:text-white">
+              <div className="flex flex-1 flex-col p-5">
+                <p className="font-display text-[10px] font-semibold uppercase tracking-[0.25em] text-zv-orange-soft">{bike.brand?.name}</p>
+                <h3 className="mt-1 font-display text-2xl font-black uppercase leading-tight tracking-[-0.03em] text-white">{bike.title}</h3>
+                <p className="mt-3 font-display text-xl font-extrabold text-zv-orange">{formatPrice(bike.price, bike.currency)}</p>
+                <Link to={`/motos/${bike.slug}`} className="mt-auto inline-flex items-center gap-1.5 border-b border-white/20 pb-1 pt-5 font-display text-xs font-bold uppercase tracking-[0.2em] text-zv-ink-300 transition-colors hover:border-zv-orange hover:text-white">
                   Ver ficha completa <ChevronRight size={14} />
                 </Link>
               </div>
@@ -188,24 +211,24 @@ export const Compare: React.FC = () => {
         </div>
       </section>
 
-      {/* 03 / Cierre */}
-      <section className="container-sf">
-        <div className="relative overflow-hidden border border-sf-red/25 bg-sf-surface p-6 sm:p-9">
-          <div className="pointer-events-none absolute -right-4 -top-10 select-none font-display text-[10rem] font-extrabold leading-none text-outline sm:text-[14rem]" aria-hidden="true">SF</div>
+      {/* Cierre */}
+      <section className="container-zv">
+        <div className="relative overflow-hidden border-y border-zv-orange/30 bg-zv-panel px-6 py-10 sm:px-9 sm:py-12">
+          <span className="pointer-events-none absolute -right-4 -top-12 select-none font-display text-[10rem] font-black leading-none text-outline sm:text-[14rem]" aria-hidden="true">ZM</span>
           <div className="relative flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-center">
             <div>
-              <span className="section-index">Siguiente paso</span>
-              <p className="mt-4 font-display text-3xl font-extrabold uppercase leading-[0.9] text-white sm:text-5xl">
-                ¿Ya te <span className="text-sf-red">decidiste?</span>
+              <span className="micro-label text-zv-orange-soft">Siguiente paso</span>
+              <p className="mt-4 font-display text-3xl font-black uppercase leading-[0.9] tracking-[-0.04em] text-white sm:text-5xl">
+                ¿Ya te <span className="text-zv-orange">decidiste?</span>
               </p>
-              <p className="mt-2 text-sm text-gray-400">Consultanos disponibilidad de estas motos por WhatsApp.</p>
+              <p className="mt-2 text-sm text-zv-ink-400">Consultanos disponibilidad de estas motos por WhatsApp.</p>
             </div>
-            <a href={whatsappLink()} target="_blank" rel="noopener noreferrer" className="btn btn-red w-full px-7 py-4 text-sm lg:w-auto">
+            <a href={whatsappLink()} target="_blank" rel="noopener noreferrer" className="btn btn-orange w-full px-7 py-4 text-sm lg:w-auto">
               <MessageCircle size={18} /> Consultar por estas motos
             </a>
           </div>
         </div>
-        <Link to="/motos" className="mt-8 inline-flex items-center gap-2 font-display text-xs font-bold uppercase tracking-[0.2em] text-gray-400 transition-colors hover:text-white">
+        <Link to="/motos" className="mt-8 inline-flex items-center gap-2 font-display text-xs font-bold uppercase tracking-[0.2em] text-zv-ink-400 transition-colors hover:text-white">
           <ChevronLeft size={15} /> Volver al catálogo
         </Link>
       </section>

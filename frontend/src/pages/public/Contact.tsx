@@ -15,7 +15,7 @@ const EMPTY_FORM: ConsultaForm = { nombre: '', email: '', telefono: '', mensaje:
 
 /** Arma el texto de la consulta sin enviarlo a ningún servidor. */
 const buildConsultaMessage = (form: ConsultaForm) => [
-  `Hola SF MOTOS! Mi nombre es ${form.nombre.trim()}.`,
+  `Hola ZAVADIVKER MOTOS! Mi nombre es ${form.nombre.trim()}.`,
   `Email: ${form.email.trim()}`,
   form.telefono.trim() ? `Teléfono: ${form.telefono.trim()}` : '',
   '',
@@ -45,51 +45,50 @@ export const Contact: React.FC = () => {
   };
 
   return (
-    <div className="bg-sf-black text-sf-white">
-      {/* 01 / Encabezado */}
+    <div className="bg-zv-black text-zv-white">
+      {/* Encabezado */}
       <PageIntro
         index="01"
-        eyebrow="Contacto · SF MOTOS"
-        title={<>Hablemos<br /><span className="text-sf-red">en la calle</span></>}
+        eyebrow={`Contacto · ${BUSINESS.name}`}
+        title={<>Hablemos<br /><span className="text-zv-orange">en la calle</span></>}
         outline="HOLA"
         description={
           <>
             <p>Escribinos, vení a la concesionaria o hablemos por WhatsApp. Estamos en {BUSINESS.address}.</p>
-            <p className="mt-2 flex items-center gap-2 text-xs text-gray-500">
-              <MapPin size={14} className="text-sf-red" /> Tucumán, Argentina · {BUSINESS.shippingLabel}
+            <p className="mt-2 flex items-center gap-2 text-xs text-zv-ink-500">
+              <MapPin size={14} className="text-zv-orange" /> Tucumán, Argentina · {BUSINESS.shippingLabel}
             </p>
           </>
         }
       />
 
-      {/* 02 / Formulario + puntos de contacto */}
+      {/* Formulario + puntos de contacto */}
       <section className="track-lines">
-        <div className="container-sf grid gap-8 py-14 sm:py-20 lg:grid-cols-12 lg:gap-10">
+        <div className="container-zv grid gap-10 py-14 sm:py-20 lg:grid-cols-12 lg:gap-12">
           {/* Formulario */}
           <div className="lg:col-span-7">
-            <div className="mb-5 flex items-center gap-3">
-              <span className="font-display text-xs font-extrabold tracking-[0.2em] text-sf-red">02</span>
-              <span className="h-px w-10 bg-sf-red" />
-              <span className="font-display text-[10px] font-bold uppercase tracking-[0.35em] text-gray-500">Escribinos</span>
+            <div className="mb-6 flex items-center gap-4">
+              <span className="race-rule" aria-hidden="true" />
+              <span className="micro-label text-zv-orange-soft">Escribinos</span>
             </div>
 
-            <div className="panel relative p-6 sm:p-8">
-              <div className="absolute inset-x-0 top-0 h-[3px] bg-sf-red" aria-hidden="true" />
+            <div className="relative min-w-0 border border-zv-line bg-zv-panel p-4 sm:p-8">
+              <span className="pointer-events-none absolute inset-y-0 left-0 w-[3px] bg-zv-orange" aria-hidden="true" />
 
               {sent ? (
                 <div className="flex min-h-[24rem] flex-col items-center justify-center text-center">
-                  <div className="flex h-16 w-16 items-center justify-center border border-green-400/40 bg-green-400/10 text-green-400">
+                  <div className="flex h-16 w-16 items-center justify-center border border-zv-orange/50 bg-zv-orange/10 text-zv-orange-soft">
                     <CheckCircle size={34} />
                   </div>
-                  <h2 className="mt-6 font-display text-4xl font-extrabold uppercase leading-[0.9] text-white sm:text-5xl">
-                    Consulta <span className="text-sf-red">preparada</span>
+                  <h2 className="mt-6 font-display text-4xl font-black uppercase leading-[0.9] tracking-[-0.04em] text-white sm:text-5xl">
+                    Consulta <span className="text-zv-orange">preparada</span>
                   </h2>
-                  <p className="mt-3 max-w-md text-sm leading-relaxed text-gray-400">
+                  <p className="mt-3 max-w-md text-sm leading-relaxed text-zv-ink-400">
                     Abrimos WhatsApp con los datos que ingresaste. Revisá la ventana nueva y enviá el mensaje
                     para que podamos responderte.
                   </p>
                   <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-                    <a href={buildWhatsAppLink(buildConsultaMessage(form))} target="_blank" rel="noopener noreferrer" className="btn btn-red px-6 py-3 text-xs">
+                    <a href={buildWhatsAppLink(buildConsultaMessage(form))} target="_blank" rel="noopener noreferrer" className="btn btn-orange px-6 py-3 text-xs">
                       <MessageCircle size={16} /> Abrir WhatsApp
                     </a>
                     <button
@@ -103,9 +102,9 @@ export const Contact: React.FC = () => {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="flex items-start gap-3 border border-white/10 bg-sf-elevated/60 p-4">
-                    <MessageCircle size={18} className="mt-0.5 shrink-0 text-sf-red" />
-                    <p className="text-xs leading-relaxed text-gray-400">
+                  <div className="flex items-start gap-3 border-l-2 border-zv-orange bg-zv-elevated/70 p-4">
+                    <MessageCircle size={18} className="mt-0.5 shrink-0 text-zv-orange" />
+                    <p className="text-xs leading-relaxed text-zv-ink-300">
                       Este formulario prepara tu consulta en WhatsApp. No envía datos a un servidor: el mensaje se envía
                       cuando lo confirmás en la app.
                     </p>
@@ -137,7 +136,7 @@ export const Contact: React.FC = () => {
                       className="field h-auto resize-y py-4 leading-relaxed"
                     />
                   </div>
-                  <button type="submit" className="btn btn-red flex w-full items-center justify-center gap-2 py-4 text-sm">
+                  <button type="submit" className="btn btn-orange flex w-full items-center justify-center gap-2 py-4 text-sm">
                     <Send size={17} />
                     Preparar consulta en WhatsApp
                   </button>
@@ -147,30 +146,29 @@ export const Contact: React.FC = () => {
           </div>
 
           {/* Contacto directo + mapa */}
-          <div className="space-y-5 lg:col-span-5">
-            <div className="mb-5 flex items-center gap-3">
-              <span className="font-display text-xs font-extrabold tracking-[0.2em] text-sf-red">03</span>
-              <span className="h-px w-10 bg-sf-red" />
-              <span className="font-display text-[10px] font-bold uppercase tracking-[0.35em] text-gray-500">Encontranos</span>
+          <div className="space-y-6 lg:col-span-5">
+            <div className="mb-6 flex items-center gap-4">
+              <span className="race-rule" aria-hidden="true" />
+              <span className="micro-label text-zv-orange-soft">Encontranos</span>
             </div>
 
             {/* WhatsApp destacado */}
-            <div className="relative overflow-hidden bg-sf-red p-6 sm:p-7">
-              <div className="pointer-events-none absolute -right-6 -top-8 select-none font-display text-[10rem] font-extrabold leading-none text-white/10" aria-hidden="true">
+            <div className="relative overflow-hidden bg-zv-orange p-6 sm:p-7">
+              <span className="pointer-events-none absolute -right-6 -top-8 select-none font-display text-[10rem] font-black leading-none text-zv-black/10" aria-hidden="true">
                 WA
-              </div>
+              </span>
               <div className="relative">
-                <MessageCircle size={30} className="text-white" />
-                <p className="mt-5 font-display text-[10px] font-bold uppercase tracking-[0.3em] text-white/70">Canal directo</p>
-                <p className="mt-1 font-display text-4xl font-extrabold uppercase leading-[0.9] text-white sm:text-5xl">
+                <MessageCircle size={30} className="text-zv-black" />
+                <p className="mt-5 font-display text-[10px] font-bold uppercase tracking-[0.3em] text-zv-black/70">Canal directo</p>
+                <p className="mt-1 font-display text-4xl font-black uppercase leading-[0.9] tracking-[-0.04em] text-zv-black sm:text-5xl">
                   WhatsApp
                 </p>
-                <p className="mt-3 text-sm text-white/85">{BUSINESS.phoneDisplay}</p>
+                <p className="mt-3 text-sm font-semibold text-zv-black/80">{BUSINESS.phoneDisplay}</p>
                 <a
                   href={waGeneral}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-6 inline-flex w-full items-center justify-center gap-2 border border-white bg-white px-6 py-4 font-display text-xs font-extrabold uppercase tracking-[0.2em] text-sf-red transition-colors hover:bg-transparent hover:text-white"
+                  className="mt-6 inline-flex w-full items-center justify-center gap-2 border border-zv-black bg-zv-black px-6 py-4 font-display text-xs font-extrabold uppercase tracking-[0.2em] text-white transition-colors hover:bg-transparent hover:text-zv-black"
                 >
                   Abrir WhatsApp ahora <ArrowUpRight size={16} />
                 </a>
@@ -178,16 +176,16 @@ export const Contact: React.FC = () => {
             </div>
 
             {/* Dirección + mapa */}
-            <div className="panel">
-              <div className="flex items-start gap-3 border-b border-white/8 p-5">
-                <MapPin size={19} className="mt-0.5 shrink-0 text-sf-red" />
+            <div className="border border-zv-line bg-zv-surface">
+              <div className="flex items-start gap-3 border-b border-zv-line p-5">
+                <MapPin size={19} className="mt-0.5 shrink-0 text-zv-orange" />
                 <div>
                   <p className="field-label">Concesionaria</p>
-                  <p className="mt-1 font-display text-xl font-bold uppercase leading-tight text-white">{BUSINESS.address}</p>
+                  <p className="mt-1 break-words font-display text-lg font-bold uppercase leading-tight text-white sm:text-xl">{BUSINESS.address}</p>
                 </div>
               </div>
               <iframe
-                title="Mapa de SF MOTOS en 9 de Julio 119, Juan B. Alberdi, Tucumán"
+                title={`Mapa de ${BUSINESS.name} en ${BUSINESS.address}`}
                 src={MAPS_EMBED}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
@@ -198,27 +196,27 @@ export const Contact: React.FC = () => {
                 href={BUSINESS.addressLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between gap-2 border-t border-white/8 px-5 py-4 font-display text-[11px] font-bold uppercase tracking-[0.2em] text-gray-300 transition-colors hover:text-white"
+                className="flex min-h-14 items-center justify-between gap-2 border-t border-zv-line px-5 py-4 font-display text-[11px] font-bold uppercase tracking-[0.2em] text-zv-ink-300 transition-colors hover:text-white"
               >
-                <span className="flex items-center gap-2"><Navigation size={15} className="text-sf-red" /> Abrir en Google Maps</span>
+                <span className="flex items-center gap-2"><Navigation size={15} className="text-zv-orange" /> Abrir en Google Maps</span>
                 <ArrowUpRight size={15} />
               </a>
             </div>
 
             {/* Datos secundarios */}
-            <div className="grid gap-px border border-white/8 bg-white/8 sm:grid-cols-2">
-              <div className="flex items-start gap-3 bg-sf-surface p-5">
-                <Truck size={19} className="shrink-0 text-sf-red" />
+            <div className="grid gap-px border border-zv-line bg-zv-line sm:grid-cols-2">
+              <div className="flex items-start gap-3 bg-zv-surface p-5">
+                <Truck size={19} className="shrink-0 text-zv-orange" />
                 <div>
                   <p className="field-label">Envíos</p>
-                  <p className="mt-1 text-xs leading-relaxed text-gray-300">{BUSINESS.shippingLabel}</p>
+                  <p className="mt-1 text-xs leading-relaxed text-zv-ink-300">{BUSINESS.shippingLabel}</p>
                 </div>
               </div>
-              <div className="flex items-start gap-3 bg-sf-surface p-5">
-                <Phone size={19} className="shrink-0 text-sf-red" />
+              <div className="flex items-start gap-3 bg-zv-surface p-5">
+                <Phone size={19} className="shrink-0 text-zv-orange" />
                 <div>
                   <p className="field-label">Teléfono</p>
-                  <p className="mt-1 text-xs leading-relaxed text-gray-300">{BUSINESS.phoneDisplay}</p>
+                  <p className="mt-1 text-xs leading-relaxed text-zv-ink-300">{BUSINESS.phoneDisplay}</p>
                 </div>
               </div>
             </div>

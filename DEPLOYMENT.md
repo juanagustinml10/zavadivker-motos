@@ -1,97 +1,44 @@
-# SF MOTOS — Guía de despliegue
+# ZAVADIVKER MOTOS — Guía de despliegue
 
-Arquitectura en producción: **SPA (Vite/React) en Cloudflare Pages** → **API Express en Vercel** → **PostgreSQL (Neon)**.
+> Este documento **no contiene secretos**. La instalación anterior (SF MOTOS)
+> sigue siendo propiedad de su titular: no reutilizar su repositorio, base de
+> datos, URLs, secretos ni credenciales. Este proyecto es una instalación
+> comercial independiente.
 
-> Estado verificado el 20/11/2026: infraestructura propia de SF MOTOS configurada y funcionando. **Este archivo no contiene secretos.**
+## 1. Arquitectura objetivo
 
----
+| Capa | Tecnología | Estado |
+| --- | --- | --- |
+| Repositorio | GitHub, repo nuevo propio | ⏳ por crear |
+| Frontend | Vite/React (Cloudflare Pages o Vercel) | ⏳ por desplegar |
+| Backend | Express + tsx (Vercel u otro host Node) | ⏳ por desplegar |
+| Base de datos | Neon PostgreSQL propia | ⏳ por crear |
 
-## 1. Producción
+`vercel.json` de la raíz describe los servicios `backend` y `frontend` con
+rewrites de `/health`, `/api/(.*)` y catch-all, útil si se despliega todo junto
+en Vercel. Si se usa Cloudflare Pages para el SPA, mantener
+`frontend/public/_redirects` y definir `VITE_API_BASE_URL` apuntando al backend nuevo.
 
-| Capa | Plataforma | Proyecto | URL |
-| --- | --- | --- | --- |
-| Repositorio | GitHub | `juanagustinml10/sf-motos` (público) | https://github.com/juanagustinml10/sf-motos |
-| Frontend | Cloudflare Pages | `sf-motos` (rama `main`) | https://sf-motos.pages.dev |
-| Backend | Vercel | `sf-motos` (cuenta `agustinmolina17`) | https://sf-motos-livid.vercel.app |
-| Base de datos | Neon | proyecto configurado en Vercel | (solo cadenas Secret) |
+## 2. Antes de publicar
 
-Cloudflare Pages y Vercel despliegan automáticamente cada push a `main`. El frontend apunta a la API de Vercel mediante el fallback productivo en `frontend/src/lib/api.ts`; no hace falta definir `VITE_API_BASE_URL` en Pages.
+1. **Repositorio**: crear un repo vacío nuevo y agregarlo como remote. El remote
+   actual todavía apunta a `juanagustinml10/sf-motos`; no hacer push hasta
+   reemplazarlo. No se realizaron cambios de remote en este trabajo.
+2. **Base de datos**: crear un proyecto Neon nuevo. Obtener la cadena pooled
+   (`-pooler`) para `DATABASE_URL` y la directa para `DATABASE_URL_UNPOOLED`.
+3. **Secretos nuevos**: generar `JWT_ACCESS_SECRET` y `JWT_REFRESH_SECRET`
+   aleatorios y distintos. No copiar los de la instalación anterior.
+4. **Frontend**: `VITE_API_BASE_URL=https://<backend-nuevo>` (variable de build).
+   Sin ella, el bundle usa `/api` relativo, que sólo funciona si frontend y API
+   comparten dominio con rewrites.
+5. **CORS**: `CORS_ORIGIN=https://<frontend-nuevo>` (y el dominio propio si aplica).
+6. **Datos oficiales**: confirmar la dirección definitiva y actualizar
+   `BUSINESS.address` / `BUSINESS.addressLink` en `frontend/src/lib/constants.ts`.
+   El WhatsApp ya está actualizado a `54938140573359`.
 
-### Verificación actual
+## 3. Base de datos y migraciones
 
-```text
-GET  https://sf-motos-livid.vercel.app/health            -> 200 {"ok":true,"service":"sfmotos-backend","db":"ok"}
-GET  https://sf-motos-livid.vercel.app/api/bikes         -> 200 {"data":[],"meta":{...}}
-GET  https://sf-motos-livid.vercel.app/api/bikes/brands  -> 200 []
-POST https://sf-motos-livid.vercel.app/api/auth/login    -> 200 { accessToken, refreshToken }
-GET  https://sf-motos.pages.dev                          -> 200 SPA de SF MOTOS
-```
-
-Las listas están vacías porque **todavía no se cargaron motocicletas**. Eso es un estado de datos, no un error de API.
-
----
-
-## 2. Backend (Vercel)
-
-`vercel.json` en la raíz define los servicios `backend` y `frontend` y los rewrites de `/health`, `/api/(.*)` y el catch-all. `backend/src/index.ts` exporta el app y evita `app.listen()` cuando `VERCEL=1`.
-
-Build del backend: `prisma generate && tsc --noEmit` (el runtime usa `tsx`, no compila a `dist/`).
-
-### Variables de entorno (production)
-
-| Variable | Estado / valor |
-| --- | --- |
-| `DATABASE_URL` | Secret de Neon (pooled, hostname `-pooler`) |
-| `DATABASE_URL_UNPOOLED` | Secret de Neon (directo, sin `-pooler`) |
-| `JWT_ACCESS_SECRET` | Secret aleatorio, propio de SF MOTOS |
-| `JWT_REFRESH_SECRET` | Secret aleatorio, distinto del anterior |
-| `JWT_ACCESS_TTL` | `900` |
-| `JWT_REFRESH_TTL` | `604800` |
-| `CORS_ORIGIN` | `https://sf-motos.pages.dev,https://sf-motos-livid.vercel.app` |
-| `PUBLIC_BASE_URL` | `https://sf-motos-livid.vercel.app` |
-| `STORAGE_DRIVER` | `db` (fotos en Neon; sin disco efímero) |
-| `MAX_FILE_SIZE` | `4194304` |
-
-Comandos útiles:
-
-```bash
-vercel env ls --project sf-motos
-vercel env add NOMBRE --project sf-motos --environment production --value VALOR --yes --force
-vercel logs --deployment <url-del-deploy>
-vercel --prod --yes            # redeploy manual desde el working tree
-```
-
-### Almacenamiento de fotos
-
-Con `STORAGE_DRIVER=db` los bytes se guardan en `BikeImage.data` (BYTEA) y se sirven por `GET /api/images/:key`. No requiere credenciales S3. `PUBLIC_BASE_URL` debe ser HTTPS y público: se usa para construir `BikeImage.url`.
-
-#### Optimización con Sharp (21/11/2026)
-
-- El original **nunca se guarda**: Multer lo recibe en memoria y Sharp lo convierte a WebP calidad 82 (`effort: 4`), con `.rotate()` para aplicar EXIF antes de redimensionar. El WebP resultante no conserva EXIF.
-- Salida full `≤1600x1600` y miniatura `≤500x500`, ambas con `fit: inside` y `withoutEnlargement` (no agrandan fotos chicas).
-- Se aceptan JPG, PNG y WebP de entrada; límite de 4 MB por archivo y guardia de 100 MP contra bombas de descompresión.
-- Columnas nuevas en `BikeImage`: `thumbnailData`, `thumbnailMimeType`, `thumbnailSizeBytes`, `thumbnailChecksum`, `width`, `height` (todas nullable; las fotos antiguas siguen funcionando con fallback a la imagen completa).
-- `GET /api/images/:key?variant=thumb` sirve la miniatura; si la fila es legacy, cae a la imagen full. Las respuestas siguen siendo `Cache-Control: public, max-age=31536000, immutable`.
-- Máximo **10 fotos por publicación**, deduplicadas por checksum SHA-256 de la imagen optimizada. Los duplicados dentro de un lote se descartan sin error.
-- La subida es **de a un archivo por request** (body limit de Vercel ~4.5 MB); el frontend itera en el servicio.
-- Al borrar una foto o una moto se eliminan los binarios. En `db` los bytes van con la fila por `ON DELETE CASCADE`; en local/S3 se borran el full y el `-thumb.webp`.
-- Nota: por el caché `immutable` del CDN, una URL ya visitada puede seguir respondiendo desde caché unos minutos tras borrar su fila. No afecta la BD ni a los listados.
-
----
-
-## 3. Frontend (Cloudflare Pages)
-
-- Root directory: `frontend` · Framework: Vite · Build: `npm run build` · Output: `dist`.
-- Proyecto: `sf-motos`, cuenta `38903a9d035a6f38fbf883173b296d6e`.
-- Dominio: `https://sf-motos.pages.dev`.
-- `frontend/public/_redirects` contiene `/* /index.html 200` para que las rutas profundas recarguen sin 404.
-- No hay secretos en el bundle: la única URL inyectada es la pública de la API.
-
----
-
-## 4. Base de datos y migraciones
-
-Migraciones versionadas en `backend/prisma/migrations`, **ya aplicadas en Neon y registradas en `_prisma_migrations`**:
+Migraciones versionadas en `backend/prisma/migrations` (no reiniciar el historial):
 
 - `20261116000000_init`
 - `20261117000000_add_usage_hours_draft`
@@ -99,30 +46,84 @@ Migraciones versionadas en `backend/prisma/migrations`, **ya aplicadas en Neon y
 - `20261121000000_optimize_images`
 - `20261121010000_add_bike_usage`
 
-Para una base nueva, ejecutar una sola vez con las cadenas directas disponibles:
+En una base nueva, una sola vez con las cadenas directas disponibles:
 
 ```bash
 cd backend
-npx prisma migrate deploy   # usa DATABASE_URL_UNPOOLED
+npx prisma migrate deploy
 ```
 
-Nunca `db push` ni reiniciar el historial de migraciones.
+`npm run build` ejecuta `prisma generate && tsc --noEmit`. El runtime usa `tsx`,
+no compila a `dist/`.
 
-### Usuario administrador
+## 4. Usuario administrador
 
-Existe un usuario `ADMIN` creado en Neon. Sus credenciales **no se versionan**; se entregaron fuera del repositorio. El panel está en `https://sf-motos.pages.dev/admin`. El registro público de administradores no existe (el alta es solo por seed/insercion controlada). Si se pierden las credenciales, crear otro admin con `backend/prisma/seed.ts` definiendo `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` localmente y ejecutando `npm run prisma:seed` **una sola vez**.
+No existe registro público de administradores. Crear el primero con el seed,
+**una sola vez**, definiendo en el entorno local:
 
-### Marcas
+```bash
+SEED_ADMIN_EMAIL=...
+SEED_ADMIN_PASSWORD=...
+npm run prisma:seed
+```
 
-El desplegable "Marca" del formulario de publicaciones se pobló con las 9 marcas que ya aparecen en la franja del home: `KTM`, `HUSQVARNA`, `GASGAS`, `BETA`, `SHERCO`, `HONDA`, `YAMAHA`, `KAWASAKI` y `SUZUKI`. Están en la tabla `Brand` de Neon con IDs `cuid` válidos para la validación del formulario. Para agregar otra marca hace falta insertarla en `Brand` (no hay alta pública ni endpoint de administración de marcas).
+El seed es idempotente: omite la creación si el email ya existe. Guardar las
+credenciales fuera del repositorio. Panel: `https://<frontend-nuevo>/admin`.
 
----
+## 5. Marcas
 
-## 5. Seguridad y operación
+El formulario de publicaciones exige un `brandId` válido (cuid) de la tabla
+`Brand`. No hay endpoint para crear marcas. Cargar en la base nueva las marcas
+que se vayan a usar, por ejemplo:
 
-- `.env`, `.env.*` (incluido `.env.production`) están ignorados; solo se versionan `.env.example`.
-- El endpoint temporal `/__sql` usado para aplicar migraciones fue **eliminado del código y del runtime**, y su variable `MIGRATE_KEY` fue borrada de Vercel.
-- Las sesiones usan JWT access + refresh con rotación y filas en `Session`. Los tokens viven en `localStorage`: migrarlos a cookies `HttpOnly`/`Secure` es una mejora pendiente.
-- No hay rate limiting en `/api/auth/login`: recomendable antes de exponer demasiado el panel.
-- Rotación de secretos JWT: generar valores nuevos, actualizarlos en Vercel y redesplegar. Esto invalida las sesiones activas.
-- Antes de dar por terminado un cambio: `npm run build` en la raíz, `npx tsc --noEmit -p tsconfig.app.json` y `npm run lint` en `frontend`.
+```sql
+INSERT INTO "Brand" (id, name, slug, "createdAt")
+VALUES
+  ('cuid-unico-1', 'KTM', 'ktm', now()),
+  ('cuid-unico-2', 'HUSQVARNA', 'husqvarna', now()),
+  ('cuid-unico-3', 'GASGAS', 'gasgas', now()),
+  ('cuid-unico-4', 'BETA', 'beta', now()),
+  ('cuid-unico-5', 'SHERCO', 'sherco', now()),
+  ('cuid-unico-6', 'HONDA', 'honda', now()),
+  ('cuid-unico-7', 'YAMAHA', 'yamaha', now()),
+  ('cuid-unico-8', 'KAWASAKI', 'kawasaki', now()),
+  ('cuid-unico-9', 'SUZUKI', 'suzuki', now())
+ON CONFLICT DO NOTHING;
+```
+
+> Reemplazar los `cuid-unico-N` por IDs cuid reales. La lista de la home es
+> sólo presentación; la base es la fuente de verdad del formulario.
+
+## 6. Almacenamiento de imágenes
+
+Con `STORAGE_DRIVER=db`, los bytes WebP se guardan en `BikeImage` (BYTEA) y se
+sirven por `GET /api/images/:key?variant=thumb`. No requiere credenciales S3.
+`PUBLIC_BASE_URL` debe ser HTTPS y público. Sharp genera full ≤1600 px y
+miniatura ≤500 px, calidad 82; máximo 10 fotos por publicación, dedupe por
+checksum y una imagen por request.
+
+Si se despliega en Vercel, **detener el backend dev server antes de
+`prisma generate`** en Windows: el query engine queda bloqueado y falla con `EPERM`.
+
+## 7. Verificación posterior al deploy
+
+```text
+GET  https://<backend-nuevo>/health                    -> 200 {"ok":true,"service":"zavadivkermotos-backend","db":"ok"}
+GET  https://<backend-nuevo>/api/bikes                 -> 200 {"data":[],"meta":{...}}
+GET  https://<backend-nuevo>/api/bikes/brands          -> 200 [...]
+POST https://<backend-nuevo>/api/auth/login            -> 200 { accessToken, refreshToken }
+GET  https://<frontend-nuevo>                          -> 200 SPA de ZAVADIVKER MOTOS
+```
+
+Después cargar unas pocas publicaciones de prueba desde el panel y revisar en
+mobile (Android e iPhone) el hero, el catálogo, los filtros por uso, la ficha,
+la galería, favoritos, comparador y el WhatsApp.
+
+## 8. Seguridad y operación
+
+- `.env`, `.env.*` ignorados; solo `.env.example` versionados.
+- JWT access + refresh con rotación y filas en `Session`. Tokens en
+  `localStorage`: migrar a cookies `HttpOnly`/`Secure` es una mejora pendiente.
+- No hay rate limiting en `/api/auth/login`: recomendable antes de exponer el panel.
+- Rotar secretos JWT propios antes del primer deploy productivo.
+- No reintroducir el endpoint temporal `/__sql` ni su variable `MIGRATE_KEY`.
