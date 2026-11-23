@@ -2,10 +2,7 @@ import * as React from 'react';
 import { ArrowRight, MapPin, MessageCircle, Search } from 'lucide-react';
 import { Link } from '@/components/shared/Link';
 import { Reveal } from '@/components/shared/Reveal';
-import { HeroBike } from '@/components/public/HeroBike';
 import { BUSINESS, buildWhatsAppLink } from '@/lib/constants';
-import categoryRoute from '@/assets/category-route.webp';
-import streetDesert from '@/assets/street-desert.webp';
 
 const PILLARS = [
   { icon: <Search size={24} />, title: 'Catálogo claro', text: 'Cada publicación muestra fotos, datos principales y precio.', n: '01' },
@@ -47,14 +44,11 @@ export const About: React.FC = () => (
           </Reveal>
         </div>
 
-        <div className="relative min-h-[45svh] overflow-hidden lg:col-span-6">
-          <img
-            src={streetDesert}
-            alt="Motocicleta de calle en un paisaje desértico"
-            loading="lazy"
-            className="absolute inset-0 h-full w-full object-cover object-[60%_50%]"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-zv-black via-transparent to-transparent lg:bg-gradient-to-r lg:from-zv-black/60" aria-hidden="true" />
+        <div className="relative min-h-[36svh] overflow-hidden bg-zv-panel lg:col-span-6 lg:min-h-0 lg:border-l lg:border-zv-line">
+          <div className="track-lines pointer-events-none absolute inset-0 opacity-60" aria-hidden="true" />
+          <span className="pointer-events-none absolute -right-4 top-8 select-none font-display text-[8rem] font-black leading-none text-outline lg:text-[11rem]" aria-hidden="true">
+            ZM
+          </span>
           <div className="absolute bottom-6 left-6 flex items-center gap-3 border border-white/20 bg-zv-black/80 px-4 py-2 backdrop-blur-sm sm:left-8">
             <span className="h-2 w-2 bg-zv-orange" />
             <span className="micro-label text-white">Enduro / Cross / Off-road</span>
@@ -91,20 +85,20 @@ export const About: React.FC = () => (
       </div>
     </section>
 
-    {/* Imagen editorial */}
-    <section className="relative">
-      <div className="h-[280px] overflow-hidden sm:h-[420px] lg:h-[520px]">
-        <HeroBike className="h-full w-full" />
-      </div>
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-zv-black/90 via-zv-black/10 to-transparent" aria-hidden="true" />
-      <div className="container-zv relative -mt-14 flex flex-wrap items-end justify-between gap-4 pb-10 sm:-mt-16">
+    {/* Catálogo */}
+    <section className="relative overflow-hidden border-y border-zv-line bg-zv-panel">
+      <div className="track-lines pointer-events-none absolute inset-0 opacity-60" aria-hidden="true" />
+      <span className="pointer-events-none absolute -right-4 top-1/2 -translate-y-1/2 select-none font-display text-[8rem] font-black leading-none text-outline sm:text-[14rem]" aria-hidden="true">
+        ZM
+      </span>
+      <div className="container-zv relative flex min-h-[280px] flex-col justify-end py-12 sm:min-h-[420px] sm:py-16">
         <div>
-          <span className="micro-label text-zv-orange-soft">Editorial</span>
+          <span className="micro-label text-zv-orange-soft">Catálogo</span>
           <p className="mt-2 font-display text-3xl font-black uppercase leading-none tracking-[-0.04em] text-white sm:text-5xl">
             0 km <span className="text-zv-orange">/</span> Usadas
           </p>
         </div>
-        <span className="race-rule hidden sm:block" aria-hidden="true" />
+        <span className="race-rule mt-6 hidden sm:block" aria-hidden="true" />
       </div>
     </section>
 
@@ -134,9 +128,11 @@ export const About: React.FC = () => (
     </section>
 
     {/* En movimiento */}
-    <section className="relative overflow-hidden border-y border-zv-line">
-      <img src={categoryRoute} alt="Motocicleta en un camino de montaña" loading="lazy" className="aspect-[4/3] min-h-[320px] w-full object-cover object-[60%_40%] sm:aspect-auto sm:min-h-[480px] sm:object-[70%_20%]" />
-      <div className="absolute inset-0 bg-zv-black/70" aria-hidden="true" />
+    <section className="relative overflow-hidden border-y border-zv-line bg-zv-black">
+      <div className="track-lines pointer-events-none absolute inset-0 opacity-60" aria-hidden="true" />
+      <span className="pointer-events-none absolute -right-6 top-1/2 -translate-y-1/2 select-none font-display text-[8rem] font-black leading-none text-outline sm:text-[14rem]" aria-hidden="true">
+        ZM
+      </span>
       <div className="container-zv relative flex min-h-[320px] flex-col justify-center py-14 sm:min-h-[480px]">
         <Reveal className="max-w-lg">
           <span className="micro-label text-zv-orange-soft">En movimiento</span>
