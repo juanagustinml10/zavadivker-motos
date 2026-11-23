@@ -10,15 +10,18 @@
 | Capa | Servicio | URL / proyecto |
 | --- | --- | --- |
 | Repositorio | GitHub público | `juanagustinml10/zavadivker-motos` (rama `main`) |
-| Frontend | Vercel (Vite, root directory `frontend`) | https://zavadivker-frontend.vercel.app |
+| Frontend | Cloudflare Pages (Vite, root directory `frontend`) — principal | https://zavadivker-motos.pages.dev |
+| Frontend (espejo) | Vercel (Vite, root directory `frontend`) | https://zavadivker-frontend.vercel.app |
 | Backend | Vercel (Express, root directory `backend`) | https://zavadivker-motos.vercel.app |
 | Base de datos | Neon PostgreSQL, proyecto `zavadivker-motos`, branch `production` | Región `aws-sa-east-1` |
 
-Ambos proyectos de Vercel están conectados al mismo repositorio: un push a
-`main` dispara un deploy automático del servicio correspondiente. El frontend
-usa `VITE_API_BASE_URL=https://zavadivker-motos.vercel.app` y el backend
-autoriza ese origen con `CORS_ORIGIN`. Las fotos se guardan en Neon
-(`STORAGE_DRIVER=db`), sin disco ni bucket.
+Los tres proyectos están conectados al mismo repositorio: un push a `main`
+dispara deploys automáticos. Cloudflare Pages compila con `npm run build` desde
+`frontend`, publica `dist` y usa `frontend/public/_redirects` para que las rutas
+del SPA devuelvan `index.html`. La variable de build `VITE_API_BASE_URL` apunta
+al backend en ambos frontends y el backend autoriza los dos orígenes con
+`CORS_ORIGIN`. Las fotos se guardan en Neon (`STORAGE_DRIVER=db`), sin disco ni
+bucket.
 
 ## 2. Variables de entorno
 
@@ -31,11 +34,15 @@ Backend (`zavadivker-motos`, Production):
 | `DATABASE_URL` | Cadena **pooled** (`-pooler`) de Neon |
 | `DATABASE_URL_UNPOOLED` | Cadena directa de Neon (la que usan las migraciones) |
 | `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` | Secretos aleatorios nuevos, distintos |
-| `CORS_ORIGIN` | `https://zavadivker-frontend.vercel.app` |
+| `CORS_ORIGIN` | `https://zavadivker-motos.pages.dev,https://zavadivker-frontend.vercel.app` |
 | `PUBLIC_BASE_URL` | `https://zavadivker-motos.vercel.app` |
 | `STORAGE_DRIVER` | `db` |
 
-Frontend (`zavadivker-frontend`, Production): `VITE_API_BASE_URL`.
+Frontends: `VITE_API_BASE_URL=https://zavadivker-motos.vercel.app` en Cloudflare
+Pages (Production y Preview) y en Vercel. **El nombre correcto es
+`VITE_API_BASE_URL`**: la variable `VITE_API_URL` que existía en Pages no la lee
+el código y debe ignorarse. En Cloudflare es una variable de **build**, no un
+`secret` de Functions; se administra desde la API/dashboard del proyecto.
 
 Para rotar secretos o cambiar orígenes:
 
@@ -81,7 +88,7 @@ SEED_ADMIN_EMAIL=... SEED_ADMIN_PASSWORD=... npm run prisma:seed
 ```
 
 El seed es idempotente: omite la creación si el email ya existe. Panel:
-https://zavadivker-frontend.vercel.app/admin
+https://zavadivker-motos.pages.dev/admin
 
 ## 5. Verificación posterior al deploy
 
@@ -90,8 +97,10 @@ GET  https://zavadivker-motos.vercel.app/health           -> 200 {"ok":true,"ser
 GET  https://zavadivker-motos.vercel.app/api/bikes        -> 200 {"data":[],"meta":{...}}
 GET  https://zavadivker-motos.vercel.app/api/bikes/brands -> 200 con las 9 marcas
 POST https://zavadivker-motos.vercel.app/api/auth/login   -> 200 con accessToken
-GET  https://zavadivker-frontend.vercel.app               -> 200 SPA de ZAVADIVKER MOTOS
-GET  https://zavadivker-frontend.vercel.app/admin/login   -> 200 SPA (rewrite a index.html)
+GET  https://zavadivker-motos.pages.dev                   -> 200 SPA de ZAVADIVKER MOTOS
+GET  https://zavadivker-motos.pages.dev/admin/login       -> 200 SPA (_redirects a index.html)
+GET  https://zavadivker-frontend.vercel.app               -> 200 SPA espejo
+GET  https://zavadivker-frontend.vercel.app/admin/login   -> 200 SPA espejo (rewrite a index.html)
 ```
 
 El catálogo público está vacío a propósito: no se publicaron motos de prueba.

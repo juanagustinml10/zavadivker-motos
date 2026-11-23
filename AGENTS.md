@@ -63,9 +63,9 @@ Dirección: **provisoria**, heredada de la instalación anterior: `9 de Julio 11
 
 ## Estado real (verificado)
 
-- Proyecto **desplegado**: frontend y backend en Vercel, base Neon propia. El sitio público muestra estados vacíos porque no hay motos publicadas todavía; no es un error de API.
+- Proyecto **desplegado**: frontend en Cloudflare Pages (con espejo en Vercel), backend en Vercel y base Neon propia. El sitio público muestra estados vacíos porque no hay motos publicadas todavía; no es un error de API.
 - Repositorio propio: `juanagustinml10/zavadivker-motos` (rama `main`). `origin` apunta ahí; no tiene relación con SF MOTOS.
-- URLs: frontend `https://zavadivker-frontend.vercel.app`, backend `https://zavadivker-motos.vercel.app`. El frontend **no apunta al backend de SF MOTOS**: `VITE_API_BASE_URL` es la única configuración. Ver `DEPLOYMENT.md`.
+- URLs: frontend principal en Cloudflare Pages `https://zavadivker-motos.pages.dev` (espejo en `https://zavadivker-frontend.vercel.app`), backend `https://zavadivker-motos.vercel.app`. El frontend **no apunta al backend de SF MOTOS**: `VITE_API_BASE_URL` es la única configuración (en Pages es variable de build; no confundir con la vieja `VITE_API_URL`). Ver `DEPLOYMENT.md`.
 - Neon: proyecto `zavadivker-motos`, branch `production`, 5 migraciones aplicadas, 9 marcas cargadas y 1 usuario administrador (`admin@zavadivker.com`, password fuera del repo).
 - No hay directorio local `.vercel` vinculado: usar siempre `--project <nombre>` con la CLI de Vercel para no apuntar al proyecto viejo.
 
