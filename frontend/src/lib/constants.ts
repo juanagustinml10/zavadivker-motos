@@ -12,10 +12,10 @@ export const BUSINESS = {
   address: '9 de Julio 119, Juan B. Alberdi, Tucumán, Argentina',
   addressLink:
     'https://maps.google.com/?q=9+de+Julio+119+Juan+B.+Alberdi+Tucuman+Argentina',
-  phoneDisplay: '381 405-7335 9',
-  whatsappNumber: '54938140573359',
+  phoneDisplay: '3814057359',
+  whatsappNumber: '5493814057359',
   whatsappGeneralMessage: 'Hola! Quisiera recibir información sobre las motos de ZAVADIVKER MOTOS.',
-  whatsappLink: 'https://wa.me/54938140573359',
+  whatsappLink: 'https://wa.me/5493814057359',
   shippingLabel: 'Consultá por envíos',
 } as const;
 

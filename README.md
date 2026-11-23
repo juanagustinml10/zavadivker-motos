@@ -8,7 +8,7 @@ fotos, filtros por condición/marca/uso, comparador, favoritos, consultas por
 WhatsApp y gestión privada de publicaciones e imágenes.
 
 > Datos oficiales centralizados en `frontend/src/lib/constants.ts`: WhatsApp
-> **381 405-7335 9** (`wa.me/54938140573359`). La dirección es provisoria
+> **3814057359** (`wa.me/5493814057359`). La dirección es provisoria
 > heredada de la instalación anterior (**9 de Julio 119, Juan B. Alberdi,
 > Tucumán**) y queda pendiente de confirmación con el cliente. No se inventan
 > garantías, cuotas, tasas, envíos ni promociones.

@@ -49,7 +49,7 @@ npx tsc --noEmit                         # dentro de backend/
 
 Nombre: **ZAVADIVKER MOTOS** · Actividad: concesionaria multimarca (motos 0 km y usadas) · Especialidad: enduro, motocross y off-road.
 
-WhatsApp/Tel: **381 405-7335 9** → `https://wa.me/54938140573359`.
+WhatsApp/Tel: **3814057359** → `https://wa.me/5493814057359`.
 
 Dirección: **provisoria**, heredada de la instalación anterior: `9 de Julio 119, Juan B. Alberdi, Tucumán, Argentina`. Pendiente de confirmación; está centralizada en `BUSINESS.address` / `BUSINESS.addressLink` en `frontend/src/lib/constants.ts`. **No inventar años, clientes, garantías, financiación, envíos, promociones ni especialidades no confirmadas.**
 
