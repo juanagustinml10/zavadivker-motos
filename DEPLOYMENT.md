@@ -5,40 +5,49 @@
 > datos, URLs, secretos ni credenciales. Este proyecto es una instalación
 > comercial independiente.
 
-## 1. Arquitectura objetivo
+## 1. Arquitectura actual (en producción)
 
-| Capa | Tecnología | Estado |
+| Capa | Servicio | URL / proyecto |
 | --- | --- | --- |
-| Repositorio | GitHub, repo nuevo propio | ⏳ por crear |
-| Frontend | Vite/React (Cloudflare Pages o Vercel) | ⏳ por desplegar |
-| Backend | Express + tsx (Vercel u otro host Node) | ⏳ por desplegar |
-| Base de datos | Neon PostgreSQL propia | ⏳ por crear |
+| Repositorio | GitHub público | `juanagustinml10/zavadivker-motos` (rama `main`) |
+| Frontend | Vercel (Vite, root directory `frontend`) | https://zavadivker-frontend.vercel.app |
+| Backend | Vercel (Express, root directory `backend`) | https://zavadivker-motos.vercel.app |
+| Base de datos | Neon PostgreSQL, proyecto `zavadivker-motos`, branch `production` | Región `aws-sa-east-1` |
 
-`vercel.json` de la raíz describe los servicios `backend` y `frontend` con
-rewrites de `/health`, `/api/(.*)` y catch-all, útil si se despliega todo junto
-en Vercel. Si se usa Cloudflare Pages para el SPA, mantener
-`frontend/public/_redirects` y definir `VITE_API_BASE_URL` apuntando al backend nuevo.
+Ambos proyectos de Vercel están conectados al mismo repositorio: un push a
+`main` dispara un deploy automático del servicio correspondiente. El frontend
+usa `VITE_API_BASE_URL=https://zavadivker-motos.vercel.app` y el backend
+autoriza ese origen con `CORS_ORIGIN`. Las fotos se guardan en Neon
+(`STORAGE_DRIVER=db`), sin disco ni bucket.
 
-## 2. Antes de publicar
+## 2. Variables de entorno
 
-1. **Repositorio**: crear un repo vacío nuevo y agregarlo como remote. El remote
-   actual todavía apunta a `juanagustinml10/sf-motos`; no hacer push hasta
-   reemplazarlo. No se realizaron cambios de remote en este trabajo.
-2. **Base de datos**: crear un proyecto Neon nuevo. Obtener la cadena pooled
-   (`-pooler`) para `DATABASE_URL` y la directa para `DATABASE_URL_UNPOOLED`.
-3. **Secretos nuevos**: generar `JWT_ACCESS_SECRET` y `JWT_REFRESH_SECRET`
-   aleatorios y distintos. No copiar los de la instalación anterior.
-4. **Frontend**: `VITE_API_BASE_URL=https://<backend-nuevo>` (variable de build).
-   Sin ella, el bundle usa `/api` relativo, que sólo funciona si frontend y API
-   comparten dominio con rewrites.
-5. **CORS**: `CORS_ORIGIN=https://<frontend-nuevo>` (y el dominio propio si aplica).
-6. **Datos oficiales**: confirmar la dirección definitiva y actualizar
-   `BUSINESS.address` / `BUSINESS.addressLink` en `frontend/src/lib/constants.ts`.
-   El WhatsApp ya está actualizado a `54938140573359`.
+Configuradas como Secret/Config en cada proyecto de Vercel, nunca versionadas.
 
-## 3. Base de datos y migraciones
+Backend (`zavadivker-motos`, Production):
 
-Migraciones versionadas en `backend/prisma/migrations` (no reiniciar el historial):
+| Variable | Valor |
+| --- | --- |
+| `DATABASE_URL` | Cadena **pooled** (`-pooler`) de Neon |
+| `DATABASE_URL_UNPOOLED` | Cadena directa de Neon (la que usan las migraciones) |
+| `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` | Secretos aleatorios nuevos, distintos |
+| `CORS_ORIGIN` | `https://zavadivker-frontend.vercel.app` |
+| `PUBLIC_BASE_URL` | `https://zavadivker-motos.vercel.app` |
+| `STORAGE_DRIVER` | `db` |
+
+Frontend (`zavadivker-frontend`, Production): `VITE_API_BASE_URL`.
+
+Para rotar secretos o cambiar orígenes:
+
+```bash
+vercel env add NOMBRE --environment production --project zavadivker-motos --force
+vercel env add VITE_API_BASE_URL --environment production --project zavadivker-frontend --force
+```
+
+## 3. Base de datos
+
+Migraciones versionadas en `backend/prisma/migrations`, **ya aplicadas** en la
+branch `production`:
 
 - `20261116000000_init`
 - `20261117000000_add_usage_hours_draft`
@@ -46,84 +55,54 @@ Migraciones versionadas en `backend/prisma/migrations` (no reiniciar el historia
 - `20261121000000_optimize_images`
 - `20261121010000_add_bike_usage`
 
-En una base nueva, una sola vez con las cadenas directas disponibles:
+En una base nueva, una sola vez y con la cadena directa:
 
 ```bash
 cd backend
 npx prisma migrate deploy
 ```
 
-`npm run build` ejecuta `prisma generate && tsc --noEmit`. El runtime usa `tsx`,
-no compila a `dist/`.
+También están cargadas las 9 marcas que figuran en la home (KTM, HUSQVARNA,
+GASGAS, BETA, SHERCO, HONDA, YAMAHA, KAWASAKI y SUZUKI). No hay endpoint para
+crear marcas: se cargan por SQL o Prisma.
 
 ## 4. Usuario administrador
 
-No existe registro público de administradores. Crear el primero con el seed,
-**una sola vez**, definiendo en el entorno local:
+No hay registro público de administradores. Se creó uno con el seed de Prisma:
+
+- Email: `admin@zavadivker.com`
+- Password: valor aleatorio entregado fuera del repositorio (guardarlo en un
+  gestor de contraseñas; no está en `.env`, git ni este documento).
+
+Si hay que recrearlo en otra base:
 
 ```bash
-SEED_ADMIN_EMAIL=...
-SEED_ADMIN_PASSWORD=...
-npm run prisma:seed
+SEED_ADMIN_EMAIL=... SEED_ADMIN_PASSWORD=... npm run prisma:seed
 ```
 
-El seed es idempotente: omite la creación si el email ya existe. Guardar las
-credenciales fuera del repositorio. Panel: `https://<frontend-nuevo>/admin`.
+El seed es idempotente: omite la creación si el email ya existe. Panel:
+https://zavadivker-frontend.vercel.app/admin
 
-## 5. Marcas
-
-El formulario de publicaciones exige un `brandId` válido (cuid) de la tabla
-`Brand`. No hay endpoint para crear marcas. Cargar en la base nueva las marcas
-que se vayan a usar, por ejemplo:
-
-```sql
-INSERT INTO "Brand" (id, name, slug, "createdAt")
-VALUES
-  ('cuid-unico-1', 'KTM', 'ktm', now()),
-  ('cuid-unico-2', 'HUSQVARNA', 'husqvarna', now()),
-  ('cuid-unico-3', 'GASGAS', 'gasgas', now()),
-  ('cuid-unico-4', 'BETA', 'beta', now()),
-  ('cuid-unico-5', 'SHERCO', 'sherco', now()),
-  ('cuid-unico-6', 'HONDA', 'honda', now()),
-  ('cuid-unico-7', 'YAMAHA', 'yamaha', now()),
-  ('cuid-unico-8', 'KAWASAKI', 'kawasaki', now()),
-  ('cuid-unico-9', 'SUZUKI', 'suzuki', now())
-ON CONFLICT DO NOTHING;
-```
-
-> Reemplazar los `cuid-unico-N` por IDs cuid reales. La lista de la home es
-> sólo presentación; la base es la fuente de verdad del formulario.
-
-## 6. Almacenamiento de imágenes
-
-Con `STORAGE_DRIVER=db`, los bytes WebP se guardan en `BikeImage` (BYTEA) y se
-sirven por `GET /api/images/:key?variant=thumb`. No requiere credenciales S3.
-`PUBLIC_BASE_URL` debe ser HTTPS y público. Sharp genera full ≤1600 px y
-miniatura ≤500 px, calidad 82; máximo 10 fotos por publicación, dedupe por
-checksum y una imagen por request.
-
-Si se despliega en Vercel, **detener el backend dev server antes de
-`prisma generate`** en Windows: el query engine queda bloqueado y falla con `EPERM`.
-
-## 7. Verificación posterior al deploy
+## 5. Verificación posterior al deploy
 
 ```text
-GET  https://<backend-nuevo>/health                    -> 200 {"ok":true,"service":"zavadivkermotos-backend","db":"ok"}
-GET  https://<backend-nuevo>/api/bikes                 -> 200 {"data":[],"meta":{...}}
-GET  https://<backend-nuevo>/api/bikes/brands          -> 200 [...]
-POST https://<backend-nuevo>/api/auth/login            -> 200 { accessToken, refreshToken }
-GET  https://<frontend-nuevo>                          -> 200 SPA de ZAVADIVKER MOTOS
+GET  https://zavadivker-motos.vercel.app/health           -> 200 {"ok":true,"service":"zavadivkermotos-backend","db":"ok"}
+GET  https://zavadivker-motos.vercel.app/api/bikes        -> 200 {"data":[],"meta":{...}}
+GET  https://zavadivker-motos.vercel.app/api/bikes/brands -> 200 con las 9 marcas
+POST https://zavadivker-motos.vercel.app/api/auth/login   -> 200 con accessToken
+GET  https://zavadivker-frontend.vercel.app               -> 200 SPA de ZAVADIVKER MOTOS
+GET  https://zavadivker-frontend.vercel.app/admin/login   -> 200 SPA (rewrite a index.html)
 ```
 
-Después cargar unas pocas publicaciones de prueba desde el panel y revisar en
-mobile (Android e iPhone) el hero, el catálogo, los filtros por uso, la ficha,
-la galería, favoritos, comparador y el WhatsApp.
+El catálogo público está vacío a propósito: no se publicaron motos de prueba.
 
-## 8. Seguridad y operación
+## 6. Seguridad y operación
 
 - `.env`, `.env.*` ignorados; solo `.env.example` versionados.
 - JWT access + refresh con rotación y filas en `Session`. Tokens en
   `localStorage`: migrar a cookies `HttpOnly`/`Secure` es una mejora pendiente.
-- No hay rate limiting en `/api/auth/login`: recomendable antes de exponer el panel.
-- Rotar secretos JWT propios antes del primer deploy productivo.
+- No hay rate limiting en `/api/auth/login`: recomendable antes de exponer más
+  el panel.
 - No reintroducir el endpoint temporal `/__sql` ni su variable `MIGRATE_KEY`.
+- El directorio local `.vercel` con el proyecto de SF MOTOS se quitó para
+  evitar deploys accidentales; usar siempre `--project <nombre>`.

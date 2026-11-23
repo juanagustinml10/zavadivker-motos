@@ -63,10 +63,11 @@ Dirección: **provisoria**, heredada de la instalación anterior: `9 de Julio 11
 
 ## Estado real (verificado)
 
-- Proyecto **local**, sin base de datos propia ni deploy: `backend/.env` es placeholder. El sitio público muestra estados vacíos por `catch → []`, por diseño.
-- El frontend **no apunta al backend de SF MOTOS**: `VITE_API_BASE_URL` (o `/api` relativo) es la única configuración. Ver `DEPLOYMENT.md`.
-- `origin` de git **sigue apuntando al repo de SF MOTOS**. No hacer push hasta crear el repo nuevo y cambiar el remote.
-- Migraciones Prisma sin aplicar en una base nueva: ver `DEPLOYMENT.md`. No hay admin ni marcas cargadas todavía.
+- Proyecto **desplegado**: frontend y backend en Vercel, base Neon propia. El sitio público muestra estados vacíos porque no hay motos publicadas todavía; no es un error de API.
+- Repositorio propio: `juanagustinml10/zavadivker-motos` (rama `main`). `origin` apunta ahí; no tiene relación con SF MOTOS.
+- URLs: frontend `https://zavadivker-frontend.vercel.app`, backend `https://zavadivker-motos.vercel.app`. El frontend **no apunta al backend de SF MOTOS**: `VITE_API_BASE_URL` es la única configuración. Ver `DEPLOYMENT.md`.
+- Neon: proyecto `zavadivker-motos`, branch `production`, 5 migraciones aplicadas, 9 marcas cargadas y 1 usuario administrador (`admin@zavadivker.com`, password fuera del repo).
+- No hay directorio local `.vercel` vinculado: usar siempre `--project <nombre>` con la CLI de Vercel para no apuntar al proyecto viejo.
 
 ## Procesos dev huérfanos
 
@@ -74,4 +75,4 @@ En Windows pueden persistir procesos en 4000/5173 entre sesiones y bloquear `pri
 
 ## Repositorio y deploy
 
-Pendientes: repo GitHub nuevo, Neon propia, Vercel/Cloudflare propios, secretos JWT nuevos, seed de admin, carga de marcas y configuración de CORS. Detalle en `DEPLOYMENT.md`. Formato de commits: `tipo(alcance): resumen en español`.
+Repositorio, Neon, Vercel, secretos JWT, seed de admin, marcas y CORS: **listos**. Detalle en `DEPLOYMENT.md`. Formato de commits: `tipo(alcance): resumen en español`.
